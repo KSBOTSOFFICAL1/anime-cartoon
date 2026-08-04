@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PostCard } from "@/components/PostCard";
 import { usePosts } from "@/lib/content-store";
-import logoAsset from "@/assets/anime-cartoon-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
