@@ -41,13 +41,17 @@ function Home() {
     <div className="min-h-screen bg-background pb-16">
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-2">
             <img
               src={logoAsset.url}
               alt="Anime Cartoon"
               className="h-9 w-auto rounded-md"
             />
+            <span className="bg-[image:var(--gradient-hero)] bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
+              Anime Cartoon
+            </span>
           </Link>
+
           <Link
             to="/admin"
             className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
