@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PostDetail } from "@/components/PostDetail";
 import { defaultPosts } from "@/data/content";
-import { usePosts } from "@/lib/content-store";
+import { usePostsState } from "@/lib/content-store";
 
 export const Route = createFileRoute("/series/$slug")({
   head: ({ params }) => {
@@ -24,8 +24,17 @@ export const Route = createFileRoute("/series/$slug")({
 
 function SeriesPage() {
   const { slug } = Route.useParams();
-  const posts = usePosts();
+  const { posts, ready } = usePostsState();
   const post = posts.find((p) => p.slug === slug && p.type === "series");
-  if (!post) throw notFound();
+  if (!post) {
+    if (!ready) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+          Loading...
+        </div>
+      );
+    }
+    throw notFound();
+  }
   return <PostDetail post={post} />;
 }
