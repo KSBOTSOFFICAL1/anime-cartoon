@@ -45,7 +45,9 @@ function AdminPanel() {
   const [draft, setDraft] = useState<Post[]>(stored);
   const [activeId, setActiveId] = useState<string>(stored[0]?.id ?? "");
   const [saved, setSaved] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const logout = useServerFn(adminLogout);
+
 
   useEffect(() => {
     setDraft(stored);
