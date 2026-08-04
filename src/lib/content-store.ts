@@ -31,11 +31,14 @@ export function resetPosts() {
 }
 
 /** SSR-safe: renders defaults on the server, hydrates admin edits on the client. */
-export function usePosts() {
-  const [posts, setPosts] = useState<Post[]>(defaultPosts);
+export function usePostsState() {
+  const [state, setState] = useState<{ posts: Post[]; ready: boolean }>({
+    posts: defaultPosts,
+    ready: false,
+  });
 
   useEffect(() => {
-    const sync = () => setPosts(read());
+    const sync = () => setState({ posts: read(), ready: true });
     sync();
     listeners.add(sync);
     return () => {
@@ -43,7 +46,11 @@ export function usePosts() {
     };
   }, []);
 
-  return posts;
+  return state;
+}
+
+export function usePosts() {
+  return usePostsState().posts;
 }
 
 export function emptyPost(type: Post["type"]): Post {
