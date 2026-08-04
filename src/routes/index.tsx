@@ -46,14 +46,6 @@ function Home() {
               Anime Cartoon
             </span>
           </Link>
-
-
-          <Link
-            to="/admin"
-            className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Admin
-          </Link>
         </div>
         <div className="mx-auto flex max-w-5xl gap-2 px-4 pb-3">
           <input
@@ -72,9 +64,7 @@ function Home() {
         </div>
       </header>
 
-      <div className="border-b border-border bg-[image:var(--gradient-hero)] px-4 py-3 text-center text-sm font-medium text-primary-foreground">
-        ✈️ Get notified instantly when new cartoons drop
-      </div>
+
 
       <main className="mx-auto max-w-5xl px-4">
         <Section title="🎬 Movies" count={`Showing ${movies.length}`}>
