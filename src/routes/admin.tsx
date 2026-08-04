@@ -308,3 +308,70 @@ function Field({
     </label>
   );
 }
+
+function ChangePassword() {
+  const change = useServerFn(adminChangePassword);
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await change({ data: { currentPassword: current, newPassword: next } });
+      if (res.ok) {
+        setMsg({ ok: true, text: "Password changed successfully" });
+        setCurrent("");
+        setNext("");
+      } else {
+        setMsg({ ok: false, text: res.error ?? "Could not change password" });
+      }
+    } catch {
+      setMsg({ ok: false, text: "Something went wrong" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={submit}
+      className="mt-3 grid gap-3 rounded-xl border border-border bg-card p-4 sm:max-w-sm"
+    >
+      <label className="block">
+        <span className="mb-1 block text-xs font-medium text-muted-foreground">
+          Current password
+        </span>
+        <input
+          type="password"
+          value={current}
+          onChange={(e) => setCurrent(e.target.value)}
+          className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+        />
+      </label>
+      <label className="block">
+        <span className="mb-1 block text-xs font-medium text-muted-foreground">New password</span>
+        <input
+          type="password"
+          value={next}
+          onChange={(e) => setNext(e.target.value)}
+          className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+        />
+      </label>
+      {msg && (
+        <p className={`text-xs ${msg.ok ? "text-primary" : "text-destructive"}`}>{msg.text}</p>
+      )}
+      <button
+        type="submit"
+        disabled={busy || !current || !next}
+        className="h-10 rounded-md bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
+      >
+        {busy ? "Saving..." : "Update password"}
+      </button>
+    </form>
+  );
+}
+
