@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PostCard } from "@/components/PostCard";
 import { usePosts } from "@/lib/content-store";
-import logoAsset from "@/assets/anime-cartoon-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,16 +41,12 @@ function Home() {
     <div className="min-h-screen bg-background pb-16">
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-          <Link to="/" className="flex items-center gap-2">
-            <img
-              src={logoAsset.url}
-              alt="Anime Cartoon"
-              className="h-9 w-auto rounded-md"
-            />
+          <Link to="/" className="flex items-center">
             <span className="bg-[image:var(--gradient-hero)] bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
               Anime Cartoon
             </span>
           </Link>
+
 
           <Link
             to="/admin"
