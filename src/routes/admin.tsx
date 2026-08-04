@@ -105,7 +105,18 @@ function AdminPanel() {
             </button>
           </div>
         </div>
+        <div className="mx-auto max-w-5xl px-4 pb-4">
+          <button
+            onClick={() => setShowPassword((v) => !v)}
+            className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground"
+          >
+            <KeyRound className="h-3 w-3" /> {showPassword ? "Close" : "Change password"}
+          </button>
+          {showPassword && <ChangePassword />}
+        </div>
       </header>
+
+
 
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-6 md:grid-cols-[240px_1fr]">
         <aside className="space-y-2">
