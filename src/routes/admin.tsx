@@ -67,7 +67,7 @@ function AdminPanel() {
 
   const addPost = (type: Post["type"]) => {
     const p = emptyPost(type);
-    p.title = type === "movie" ? "New Movie" : "New Series";
+    p.title = type === "movie" ? "New Movie" : type === "series" ? "New Series" : "New Promo";
     p.slug = `new-${type}-${Date.now()}`;
     setDraft((d) => [...d, p]);
     setActiveId(p.id);
@@ -129,6 +129,12 @@ function AdminPanel() {
               className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
             >
               <Plus className="h-3 w-3" /> Movie
+            </button>
+            <button
+              onClick={() => addPost("promo")}
+              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+            >
+              <Plus className="h-3 w-3" /> Promo
             </button>
             <button
               onClick={() => addPost("series")}
