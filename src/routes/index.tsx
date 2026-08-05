@@ -11,12 +11,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Download the latest Hindi dubbed cartoon movies and series in 1080p FHD multi-audio. Fresh Little Singham, Chhota Bheem and Motu Patlu releases.",
+          "Download the latest Hindi dubbed cartoon movies and series in 1080p FHD multi-audio. Fresh Little Singham, Chhota Bheem and Motu Patlu aur Anime Cartoon.",
       },
-      { property: "og:title", content: "Anime Cartoon — Cartoon Movies & Series in HD" },
+      { property: "og:title", content: "Anime Cartoon — Download Cartoon Movies & Series in HD" },
       {
         property: "og:description",
-        content: "Latest cartoon movies and series in 1080p multi-audio, ready to download.",
+        content: "Download the latest Hindi dubbed cartoon movies and series in 1080p FHD multi-audio. Fresh Little Singham, Chhota Bheem and Motu Patlu aur Anime Cartoon.",
       },
     ],
   }),
