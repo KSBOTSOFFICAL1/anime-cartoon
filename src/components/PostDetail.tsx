@@ -127,7 +127,7 @@ export function PostDetail({ post }: { post: Post }) {
               rel="noreferrer"
               className="flex h-12 items-center justify-center gap-2 rounded-lg bg-secondary text-sm font-semibold text-secondary-foreground"
             >
-              <Download className="h-4 w-4" /> Google Drive Link
+              <Download className="h-4 w-4" /> Google Drive Download
             </a>
           ) : null}
           {post.telegramUrl ? (
@@ -137,7 +137,7 @@ export function PostDetail({ post }: { post: Post }) {
               rel="noreferrer"
               className="flex h-12 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-accent-foreground"
             >
-              Telegram Bot
+              <Download className="h-4 w-4" /> Telegram Bot Download
             </a>
           ) : null}
         </div>
