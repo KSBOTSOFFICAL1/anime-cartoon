@@ -173,12 +173,12 @@ function AdminPanel() {
               onChange={(v) => update({ downloadImage: v })}
             />
             <Field
-              label="Drive link (optional)"
+              label="Drive Download link (optional)"
               value={active.driveUrl ?? ""}
               onChange={(v) => update({ driveUrl: v })}
             />
             <Field
-              label="Telegram bot link (optional)"
+              label="Telegram bot Download link (optional)"
               value={active.telegramUrl ?? ""}
               onChange={(v) => update({ telegramUrl: v })}
             />
