@@ -32,9 +32,9 @@ export function PostDetail({ post }: { post: Post }) {
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <div className="relative h-52 overflow-hidden">
-        {post.poster ? (
-          <img src={post.poster} alt="" className="h-full w-full object-cover object-top" />
+      <div className="relative aspect-video max-h-72 w-full overflow-hidden">
+        {post.banner || post.poster ? (
+          <img src={post.banner || post.poster} alt="" className="h-full w-full object-cover object-top" />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         <Link
@@ -102,10 +102,10 @@ export function PostDetail({ post }: { post: Post }) {
           Download Links
         </h2>
 
-        <div className="mt-3 rounded-xl border border-border bg-card p-3">
-          {post.poster ? (
+        <div className="mt-3 space-y-3 rounded-xl border border-border bg-card p-3">
+          {post.downloadImage || post.poster ? (
             <img
-              src={post.poster}
+              src={post.downloadImage || post.poster}
               alt=""
               loading="lazy"
               className="h-40 w-full rounded-lg object-cover"
@@ -115,11 +115,31 @@ export function PostDetail({ post }: { post: Post }) {
             href={link}
             target="_blank"
             rel="noreferrer"
-            className="mt-3 flex h-12 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]"
+            className="flex h-12 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]"
           >
             <Download className="h-4 w-4" />
-            {isSeries ? "Download Episode" : "Download 1080p (Google Drive)"}
+            {isSeries ? "Download Episode" : "Download 1080p"}
           </a>
+          {post.driveUrl ? (
+            <a
+              href={post.driveUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-12 items-center justify-center gap-2 rounded-lg bg-secondary text-sm font-semibold text-secondary-foreground"
+            >
+              <Download className="h-4 w-4" /> Google Drive Link
+            </a>
+          ) : null}
+          {post.telegramUrl ? (
+            <a
+              href={post.telegramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-12 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-accent-foreground"
+            >
+              Telegram Bot
+            </a>
+          ) : null}
         </div>
       </div>
 
