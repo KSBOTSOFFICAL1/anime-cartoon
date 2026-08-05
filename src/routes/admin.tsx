@@ -158,9 +158,29 @@ function AdminPanel() {
             <Field label="Title" value={active.title} onChange={(v) => update({ title: v })} />
             <Field label="Slug (URL)" value={active.slug} onChange={(v) => update({ slug: v })} />
             <Field
-              label="Poster image URL"
+              label="Poster photo link (4:6 vertical)"
               value={active.poster}
               onChange={(v) => update({ poster: v })}
+            />
+            <Field
+              label="Banner photo link (16:9 wide)"
+              value={active.banner ?? ""}
+              onChange={(v) => update({ banner: v })}
+            />
+            <Field
+              label="Download photo link"
+              value={active.downloadImage ?? ""}
+              onChange={(v) => update({ downloadImage: v })}
+            />
+            <Field
+              label="Drive link (optional)"
+              value={active.driveUrl ?? ""}
+              onChange={(v) => update({ driveUrl: v })}
+            />
+            <Field
+              label="Telegram bot link (optional)"
+              value={active.telegramUrl ?? ""}
+              onChange={(v) => update({ telegramUrl: v })}
             />
             <div className="grid grid-cols-2 gap-3">
               <Field label="Year" value={active.year} onChange={(v) => update({ year: v })} />

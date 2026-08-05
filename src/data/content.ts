@@ -6,6 +6,10 @@ export type Post = {
   type: "movie" | "series";
   title: string;
   poster: string;
+  banner?: string;
+  downloadImage?: string;
+  driveUrl?: string;
+  telegramUrl?: string;
   year: string;
   releaseDate: string;
   genres: string[];
