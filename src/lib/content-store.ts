@@ -75,5 +75,57 @@ export function emptyPost(type: Post["type"]): Post {
     encodedBy: "Anime Cartoon",
     downloadUrl: "",
     episodes: [],
+    promoVideo: "",
+    showViews: true,
+    allowComments: true,
   };
+}
+
+/* ---------- views ---------- */
+const VIEWS_KEY = "atoz-views-v1";
+
+function readMap<T>(key: string): Record<string, T> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(key) ?? "{}") as Record<string, T>;
+  } catch {
+    return {};
+  }
+}
+
+export function useViewCount(slug: string, enabled: boolean) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!enabled || typeof window === "undefined") return;
+    const map = readMap<number>(VIEWS_KEY);
+    const next = (map[slug] ?? 0) + 1;
+    map[slug] = next;
+    window.localStorage.setItem(VIEWS_KEY, JSON.stringify(map));
+    setCount(next);
+  }, [slug, enabled]);
+  return count;
+}
+
+/* ---------- comments ---------- */
+export type Comment = { name: string; text: string; at: number };
+const COMMENTS_KEY = "atoz-comments-v1";
+
+export function useComments(slug: string) {
+  const [comments, setComments] = useState<Comment[]>([]);
+
+  useEffect(() => {
+    setComments(readMap<Comment[]>(COMMENTS_KEY)[slug] ?? []);
+  }, [slug]);
+
+  const add = (name: string, text: string) => {
+    const map = readMap<Comment[]>(COMMENTS_KEY);
+    const next = [...(map[slug] ?? []), { name, text, at: Date.now() }];
+    map[slug] = next;
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(COMMENTS_KEY, JSON.stringify(map));
+    }
+    setComments(next);
+  };
+
+  return { comments, add };
 }

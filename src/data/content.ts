@@ -1,15 +1,20 @@
 export type Episode = { label: string; url: string };
 
+export const TELEGRAM_JOIN_URL = "https://t.me/+-rRx3CW3SvEyNWY9";
+
 export type Post = {
   id: string;
   slug: string;
-  type: "movie" | "series";
+  type: "movie" | "series" | "promo";
   title: string;
   poster: string;
   banner?: string;
   downloadImage?: string;
   driveUrl?: string;
   telegramUrl?: string;
+  promoVideo?: string;
+  showViews?: boolean;
+  allowComments?: boolean;
   year: string;
   releaseDate: string;
   genres: string[];

@@ -36,6 +36,7 @@ function Home() {
 
   const movies = filtered.filter((p) => p.type === "movie");
   const series = filtered.filter((p) => p.type === "series");
+  const promos = filtered.filter((p) => p.type === "promo");
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -74,6 +75,16 @@ function Home() {
             ))}
           </div>
         </Section>
+
+        {promos.length > 0 ? (
+          <Section title="🎬 New Promo" count={`Showing ${promos.length}`}>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {promos.map((p) => (
+                <PostCard key={p.id} post={p} />
+              ))}
+            </div>
+          </Section>
+        ) : null}
 
         <Section title="📺 Series" count={`Showing ${series.length}`}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">

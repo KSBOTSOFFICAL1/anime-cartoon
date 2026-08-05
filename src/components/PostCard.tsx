@@ -2,10 +2,15 @@ import { Link } from "@tanstack/react-router";
 import type { Post } from "@/data/content";
 
 export function PostCard({ post }: { post: Post }) {
-  const isMovie = post.type === "movie";
+  const to =
+    post.type === "movie"
+      ? "/movies/$slug"
+      : post.type === "series"
+        ? "/series/$slug"
+        : "/promo/$slug";
   return (
     <Link
-      to={isMovie ? "/movies/$slug" : "/series/$slug"}
+      to={to}
       params={{ slug: post.slug }}
       className="group block overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)] transition-transform hover:-translate-y-1"
     >

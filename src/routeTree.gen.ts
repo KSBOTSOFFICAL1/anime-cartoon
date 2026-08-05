@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as MoviesSlugRouteImport } from './routes/movies.$slug'
+import { Route as PromoSlugRouteImport } from './routes/promo.$slug'
 import { Route as SeriesSlugRouteImport } from './routes/series.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const MoviesSlugRoute = MoviesSlugRouteImport.update({
   path: '/movies/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PromoSlugRoute = PromoSlugRouteImport.update({
+  id: '/promo/$slug',
+  path: '/promo/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SeriesSlugRoute = SeriesSlugRouteImport.update({
   id: '/series/$slug',
   path: '/series/$slug',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/movies/$slug': typeof MoviesSlugRoute
+  '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/movies/$slug': typeof MoviesSlugRoute
+  '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/movies/$slug': typeof MoviesSlugRoute
+  '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/movies/$slug' | '/series/$slug'
+  fullPaths: '/' | '/admin' | '/movies/$slug' | '/promo/$slug' | '/series/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/movies/$slug' | '/series/$slug'
-  id: '__root__' | '/' | '/admin' | '/movies/$slug' | '/series/$slug'
+  to: '/' | '/admin' | '/movies/$slug' | '/promo/$slug' | '/series/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/movies/$slug'
+    | '/promo/$slug'
+    | '/series/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   MoviesSlugRoute: typeof MoviesSlugRoute
+  PromoSlugRoute: typeof PromoSlugRoute
   SeriesSlugRoute: typeof SeriesSlugRoute
 }
 
@@ -92,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoviesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/promo/$slug': {
+      id: '/promo/$slug'
+      path: '/promo/$slug'
+      fullPath: '/promo/$slug'
+      preLoaderRoute: typeof PromoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/series/$slug': {
       id: '/series/$slug'
       path: '/series/$slug'
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   MoviesSlugRoute: MoviesSlugRoute,
+  PromoSlugRoute: PromoSlugRoute,
   SeriesSlugRoute: SeriesSlugRoute,
 }
 export const routeTree = rootRouteImport

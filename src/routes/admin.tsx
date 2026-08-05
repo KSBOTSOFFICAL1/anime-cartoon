@@ -67,7 +67,7 @@ function AdminPanel() {
 
   const addPost = (type: Post["type"]) => {
     const p = emptyPost(type);
-    p.title = type === "movie" ? "New Movie" : "New Series";
+    p.title = type === "movie" ? "New Movie" : type === "series" ? "New Series" : "New Promo";
     p.slug = `new-${type}-${Date.now()}`;
     setDraft((d) => [...d, p]);
     setActiveId(p.id);
@@ -131,6 +131,12 @@ function AdminPanel() {
               <Plus className="h-3 w-3" /> Movie
             </button>
             <button
+              onClick={() => addPost("promo")}
+              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+            >
+              <Plus className="h-3 w-3" /> Promo
+            </button>
+            <button
               onClick={() => addPost("series")}
               className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
             >
@@ -162,131 +168,161 @@ function AdminPanel() {
               value={active.poster}
               onChange={(v) => update({ poster: v })}
             />
-            <Field
-              label="Banner photo link (16:9 wide)"
-              value={active.banner ?? ""}
-              onChange={(v) => update({ banner: v })}
-            />
-            <Field
-              label="Download photo link"
-              value={active.downloadImage ?? ""}
-              onChange={(v) => update({ downloadImage: v })}
-            />
-            <Field
-              label="Drive Download link (optional)"
-              value={active.driveUrl ?? ""}
-              onChange={(v) => update({ driveUrl: v })}
-            />
-            <Field
-              label="Telegram bot Download link (optional)"
-              value={active.telegramUrl ?? ""}
-              onChange={(v) => update({ telegramUrl: v })}
-            />
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Year" value={active.year} onChange={(v) => update({ year: v })} />
-              <Field
-                label="Release date"
-                value={active.releaseDate}
-                onChange={(v) => update({ releaseDate: v })}
-              />
-            </div>
-            <Field
-              label="Genres (comma separated)"
-              value={active.genres.join(", ")}
-              onChange={(v) => update({ genres: v.split(",").map((g) => g.trim()).filter(Boolean) })}
-            />
-            <Field
-              label="Languages"
-              value={active.languages}
-              onChange={(v) => update({ languages: v })}
-            />
-            <div className="grid grid-cols-2 gap-3">
-              <Field
-                label="Duration"
-                value={active.duration}
-                onChange={(v) => update({ duration: v })}
-              />
-              <Field
-                label="File size"
-                value={active.fileSize}
-                onChange={(v) => update({ fileSize: v })}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field
-                label="Quality"
-                value={active.quality}
-                onChange={(v) => update({ quality: v })}
-              />
-              <Field label="OTT platform" value={active.ott} onChange={(v) => update({ ott: v })} />
-            </div>
-            <Field
-              label="Coming soon date (optional)"
-              value={active.comingSoon ?? ""}
-              onChange={(v) => update({ comingSoon: v })}
-            />
-
-            {active.type === "movie" ? (
-              <Field
-                label="Download link"
-                value={active.downloadUrl}
-                onChange={(v) => update({ downloadUrl: v })}
-              />
+            {active.type === "promo" ? (
+              <>
+                <Field
+                  label="Promo video link (YouTube)"
+                  value={active.promoVideo ?? ""}
+                  onChange={(v) => update({ promoVideo: v })}
+                />
+                <Field
+                  label="Release date (optional)"
+                  value={active.releaseDate}
+                  onChange={(v) => update({ releaseDate: v })}
+                />
+                <Toggle
+                  label="Post views"
+                  checked={active.showViews !== false}
+                  onChange={(v) => update({ showViews: v })}
+                />
+                <Toggle
+                  label="Comments"
+                  checked={active.allowComments !== false}
+                  onChange={(v) => update({ allowComments: v })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Telegram join link is shown automatically on every promo page.
+                </p>
+              </>
             ) : (
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Episodes</p>
-                {active.episodes.map((ep, i) => (
-                  <div key={i} className="flex gap-2">
-                    <input
-                      value={ep.label}
-                      onChange={(e) =>
-                        update({
-                          episodes: active.episodes.map((x, j) =>
-                            j === i ? { ...x, label: e.target.value } : x,
-                          ),
-                        })
-                      }
-                      className="h-9 w-36 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                    />
-                    <input
-                      value={ep.url}
-                      onChange={(e) =>
-                        update({
-                          episodes: active.episodes.map((x, j) =>
-                            j === i ? { ...x, url: e.target.value } : x,
-                          ),
-                        })
-                      }
-                      className="h-9 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                    />
-                    <button
-                      onClick={() =>
-                        update({ episodes: active.episodes.filter((_, j) => j !== i) })
-                      }
-                      className="rounded-md border border-border px-2 text-muted-foreground"
-                      aria-label="Remove episode"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() =>
-                    update({
-                      episodes: [
-                        ...active.episodes,
-                        {
-                          label: `Episode ${String(active.episodes.length + 1).padStart(2, "0")}`,
-                          url: "",
-                        },
-                      ],
-                    })
-                  }
-                  className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground"
-                >
-                  + Add episode
-                </button>
+              <>
+              <Field
+                label="Banner photo link (16:9 wide)"
+                value={active.banner ?? ""}
+                onChange={(v) => update({ banner: v })}
+              />
+              <Field
+                label="Download photo link"
+                value={active.downloadImage ?? ""}
+                onChange={(v) => update({ downloadImage: v })}
+              />
+              <Field
+                label="Drive Download link (optional)"
+                value={active.driveUrl ?? ""}
+                onChange={(v) => update({ driveUrl: v })}
+              />
+              <Field
+                label="Telegram bot Download link (optional)"
+                value={active.telegramUrl ?? ""}
+                onChange={(v) => update({ telegramUrl: v })}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Year" value={active.year} onChange={(v) => update({ year: v })} />
+                <Field
+                  label="Release date"
+                  value={active.releaseDate}
+                  onChange={(v) => update({ releaseDate: v })}
+                />
               </div>
+              <Field
+                label="Genres (comma separated)"
+                value={active.genres.join(", ")}
+                onChange={(v) => update({ genres: v.split(",").map((g) => g.trim()).filter(Boolean) })}
+              />
+              <Field
+                label="Languages"
+                value={active.languages}
+                onChange={(v) => update({ languages: v })}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <Field
+                  label="Duration"
+                  value={active.duration}
+                  onChange={(v) => update({ duration: v })}
+                />
+                <Field
+                  label="File size"
+                  value={active.fileSize}
+                  onChange={(v) => update({ fileSize: v })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Field
+                  label="Quality"
+                  value={active.quality}
+                  onChange={(v) => update({ quality: v })}
+                />
+                <Field label="OTT platform" value={active.ott} onChange={(v) => update({ ott: v })} />
+              </div>
+              <Field
+                label="Coming soon date (optional)"
+                value={active.comingSoon ?? ""}
+                onChange={(v) => update({ comingSoon: v })}
+              />
+
+              {active.type === "movie" ? (
+                <Field
+                  label="Download link"
+                  value={active.downloadUrl}
+                  onChange={(v) => update({ downloadUrl: v })}
+                />
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Episodes</p>
+                  {active.episodes.map((ep, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        value={ep.label}
+                        onChange={(e) =>
+                          update({
+                            episodes: active.episodes.map((x, j) =>
+                              j === i ? { ...x, label: e.target.value } : x,
+                            ),
+                          })
+                        }
+                        className="h-9 w-36 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <input
+                        value={ep.url}
+                        onChange={(e) =>
+                          update({
+                            episodes: active.episodes.map((x, j) =>
+                              j === i ? { ...x, url: e.target.value } : x,
+                            ),
+                          })
+                        }
+                        className="h-9 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <button
+                        onClick={() =>
+                          update({ episodes: active.episodes.filter((_, j) => j !== i) })
+                        }
+                        className="rounded-md border border-border px-2 text-muted-foreground"
+                        aria-label="Remove episode"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() =>
+                      update({
+                        episodes: [
+                          ...active.episodes,
+                          {
+                            label: `Episode ${String(active.episodes.length + 1).padStart(2, "0")}`,
+                            url: "",
+                          },
+                        ],
+                      })
+                    }
+                    className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground"
+                  >
+                    + Add episode
+                  </button>
+                </div>
+              )}
+              </>
             )}
 
             <button
@@ -325,6 +361,31 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
       />
+    </label>
+  );
+}
+
+function Toggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <button
+        type="button"
+        onClick={() => onChange(!checked)}
+        className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase ${
+          checked ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+        }`}
+      >
+        {checked ? "On" : "Off"}
+      </button>
     </label>
   );
 }
