@@ -72,7 +72,14 @@ function AdminPanel() {
 
   const addPost = (type: Post["type"]) => {
     const p = emptyPost(type);
-    p.title = type === "movie" ? "New Movie" : type === "series" ? "New Series" : "New Promo";
+    p.title =
+      type === "movie"
+        ? "New Movie"
+        : type === "series"
+          ? "New Series"
+          : type === "page"
+            ? "New Page"
+            : "New Promo";
     p.slug = `new-${type}-${Date.now()}`;
     setDraft((d) => [...d, p]);
     setActiveId(p.id);
