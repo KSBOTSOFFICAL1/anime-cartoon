@@ -60,8 +60,12 @@ function AdminPanel() {
   const update = (patch: Partial<Post>) =>
     setDraft((d) => d.map((p) => (p.id === activeId ? { ...p, ...patch } : p)));
 
-  const commit = () => {
-    savePosts(draft);
+  const commit = async () => {
+    const res = await savePosts(draft);
+    if (res?.ok === false) {
+      alert(res.error ?? "Could not save posts");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   };
