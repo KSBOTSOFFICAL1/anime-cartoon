@@ -35,7 +35,7 @@ export const savePostsRemote = createServerFn({ method: "POST" })
       slug: p.slug,
       type: p.type,
       position: i,
-      data: p as unknown as Record<string, unknown>,
+      data: JSON.parse(JSON.stringify(p)),
       updated_at: new Date().toISOString(),
     }));
 
