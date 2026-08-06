@@ -3,12 +3,7 @@ import { useState } from "react";
 import { Eye, Send } from "lucide-react";
 import { TELEGRAM_JOIN_URL, type Post } from "@/data/content";
 import { useComments, useViewCount } from "@/lib/content-store";
-
-function embedUrl(url: string) {
-  const yt = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
-  return url;
-}
+import { embedUrl } from "@/lib/video";
 
 export function PromoDetail({ post }: { post: Post }) {
   const views = useViewCount(post.slug, post.showViews !== false);
