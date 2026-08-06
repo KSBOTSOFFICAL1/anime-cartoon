@@ -374,6 +374,12 @@ function AdminPanel() {
               </>
             )}
 
+            <Toggle
+              label="Hide from home page (link still opens)"
+              checked={active.hidden === true}
+              onChange={(v) => update({ hidden: v })}
+            />
+
             <button
               onClick={() => {
                 const next = draft.filter((p) => p.id !== activeId);
@@ -382,7 +388,7 @@ function AdminPanel() {
               }}
               className="flex items-center gap-1 text-xs font-medium text-destructive"
             >
-              <Trash2 className="h-3 w-3" /> Delete this post
+              <Trash2 className="h-3 w-3" /> Delete this {active.type === "page" ? "page" : "post"}
             </button>
           </section>
         ) : (
