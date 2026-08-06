@@ -6,6 +6,7 @@ import type { Post } from "@/data/content";
 import { emptyPost, resetPosts, savePosts, usePosts } from "@/lib/content-store";
 import { AdminLogin } from "@/components/AdminLogin";
 import { adminChangePassword, adminLogout, getAdminStatus } from "@/lib/admin-gate.functions";
+import { embedUrl } from "@/lib/video";
 
 
 export const Route = createFileRoute("/admin")({
