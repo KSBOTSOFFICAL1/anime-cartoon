@@ -175,6 +175,33 @@ function AdminPanel() {
                   value={active.promoVideo ?? ""}
                   onChange={(v) => update({ promoVideo: v })}
                 />
+                {active.promoVideo?.trim() ? (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-muted-foreground">Video preview</p>
+                    <div className="aspect-video w-full overflow-hidden rounded-lg border border-border bg-background">
+                      <iframe
+                        key={active.promoVideo}
+                        src={embedUrl(active.promoVideo)}
+                        title="Promo video preview"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                        allowFullScreen
+                        className="h-full w-full"
+                      />
+                    </div>
+                    <a
+                      href={active.promoVideo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-primary underline"
+                    >
+                      Open link in new tab
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Paste a YouTube link to see the preview here.
+                  </p>
+                )}
                 <Field
                   label="Release date (optional)"
                   value={active.releaseDate}
