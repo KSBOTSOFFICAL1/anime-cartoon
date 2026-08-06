@@ -5,7 +5,9 @@ export const TELEGRAM_JOIN_URL = "https://t.me/+-rRx3CW3SvEyNWY9";
 export type Post = {
   id: string;
   slug: string;
-  type: "movie" | "series" | "promo";
+  type: "movie" | "series" | "promo" | "page";
+  content?: string;
+  hidden?: boolean;
   title: string;
   poster: string;
   banner?: string;

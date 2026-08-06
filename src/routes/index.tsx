@@ -28,15 +28,18 @@ function Home() {
   const [query, setQuery] = useState("");
   const [term, setTerm] = useState("");
 
+  const visible = useMemo(() => posts.filter((p) => !p.hidden), [posts]);
+
   const filtered = useMemo(() => {
     const t = term.trim().toLowerCase();
-    if (!t) return posts;
-    return posts.filter((p) => p.title.toLowerCase().includes(t));
-  }, [posts, term]);
+    if (!t) return visible;
+    return visible.filter((p) => p.title.toLowerCase().includes(t));
+  }, [visible, term]);
 
   const movies = filtered.filter((p) => p.type === "movie");
   const series = filtered.filter((p) => p.type === "series");
   const promos = filtered.filter((p) => p.type === "promo");
+  const pages = visible.filter((p) => p.type === "page");
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -102,6 +105,15 @@ function Home() {
       </main>
 
       <footer className="mt-12 border-t border-border bg-card py-5 text-center text-xs text-muted-foreground">
+        {pages.length > 0 ? (
+          <nav className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-2">
+            {pages.map((p) => (
+              <Link key={p.id} to="/page/$slug" params={{ slug: p.slug }} className="hover:text-primary">
+                {p.title || "Untitled"}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
         Copyright © 2026 <span className="text-primary">Anime Cartoon</span>
       </footer>
     </div>

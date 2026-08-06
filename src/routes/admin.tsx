@@ -72,7 +72,14 @@ function AdminPanel() {
 
   const addPost = (type: Post["type"]) => {
     const p = emptyPost(type);
-    p.title = type === "movie" ? "New Movie" : type === "series" ? "New Series" : "New Promo";
+    p.title =
+      type === "movie"
+        ? "New Movie"
+        : type === "series"
+          ? "New Series"
+          : type === "page"
+            ? "New Page"
+            : "New Promo";
     p.slug = `new-${type}-${Date.now()}`;
     setDraft((d) => [...d, p]);
     setActiveId(p.id);
@@ -121,41 +128,64 @@ function AdminPanel() {
 
 
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-6 md:grid-cols-[240px_1fr]">
-        <aside className="space-y-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => addPost("movie")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Movie
-            </button>
-            <button
-              onClick={() => addPost("promo")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Promo
-            </button>
-            <button
-              onClick={() => addPost("series")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Series
-            </button>
+        <aside className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Posts
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => addPost("movie")}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+              >
+                <Plus className="h-3 w-3" /> Movie
+              </button>
+              <button
+                onClick={() => addPost("promo")}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+              >
+                <Plus className="h-3 w-3" /> Promo
+              </button>
+              <button
+                onClick={() => addPost("series")}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+              >
+                <Plus className="h-3 w-3" /> Series
+              </button>
+            </div>
+            {draft
+              .filter((p) => p.type !== "page")
+              .map((p) => (
+                <SidebarItem
+                  key={p.id}
+                  post={p}
+                  active={p.id === activeId}
+                  onClick={() => setActiveId(p.id)}
+                />
+              ))}
           </div>
-          {draft.map((p) => (
+
+          <div className="space-y-2 border-t border-border pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Pages
+            </p>
             <button
-              key={p.id}
-              onClick={() => setActiveId(p.id)}
-              className={`w-full rounded-md border px-3 py-2 text-left text-xs ${
-                p.id === activeId
-                  ? "border-primary bg-primary/10 text-foreground"
-                  : "border-border text-muted-foreground"
-              }`}
+              onClick={() => addPost("page")}
+              className="flex w-full items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
             >
-              <span className="block truncate font-medium">{p.title || "Untitled"}</span>
-              <span className="text-[10px] uppercase tracking-wide">{p.type}</span>
+              <Plus className="h-3 w-3" /> Add Page
             </button>
-          ))}
+            {draft
+              .filter((p) => p.type === "page")
+              .map((p) => (
+                <SidebarItem
+                  key={p.id}
+                  post={p}
+                  active={p.id === activeId}
+                  onClick={() => setActiveId(p.id)}
+                />
+              ))}
+          </div>
         </aside>
 
         {active ? (
@@ -163,11 +193,27 @@ function AdminPanel() {
             <Field label="Title" value={active.title} onChange={(v) => update({ title: v })} />
             <Field label="Slug (URL)" value={active.slug} onChange={(v) => update({ slug: v })} />
             <Field
-              label="Poster photo link (4:6 vertical)"
+              label={
+                active.type === "page"
+                  ? "Page image link (optional)"
+                  : "Poster photo link (4:6 vertical)"
+              }
               value={active.poster}
               onChange={(v) => update({ poster: v })}
             />
-            {active.type === "promo" ? (
+            {active.type === "page" ? (
+              <label className="block">
+                <span className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Page content
+                </span>
+                <textarea
+                  value={active.content ?? ""}
+                  onChange={(e) => update({ content: e.target.value })}
+                  rows={12}
+                  className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+                />
+              </label>
+            ) : active.type === "promo" ? (
               <>
                 <Field
                   label="Promo video link (YouTube)"
@@ -351,6 +397,12 @@ function AdminPanel() {
               </>
             )}
 
+            <Toggle
+              label="Hide from home page (link still opens)"
+              checked={active.hidden === true}
+              onChange={(v) => update({ hidden: v })}
+            />
+
             <button
               onClick={() => {
                 const next = draft.filter((p) => p.id !== activeId);
@@ -359,7 +411,7 @@ function AdminPanel() {
               }}
               className="flex items-center gap-1 text-xs font-medium text-destructive"
             >
-              <Trash2 className="h-3 w-3" /> Delete this post
+              <Trash2 className="h-3 w-3" /> Delete this {active.type === "page" ? "page" : "post"}
             </button>
           </section>
         ) : (
@@ -369,6 +421,34 @@ function AdminPanel() {
     </div>
   );
 }
+
+function SidebarItem({
+  post,
+  active,
+  onClick,
+}: {
+  post: Post;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full rounded-md border px-3 py-2 text-left text-xs ${
+        active
+          ? "border-primary bg-primary/10 text-foreground"
+          : "border-border text-muted-foreground"
+      }`}
+    >
+      <span className="block truncate font-medium">{post.title || "Untitled"}</span>
+      <span className="text-[10px] uppercase tracking-wide">
+        {post.type}
+        {post.hidden ? " · hidden" : ""}
+      </span>
+    </button>
+  );
+}
+
 
 function Field({
   label,
