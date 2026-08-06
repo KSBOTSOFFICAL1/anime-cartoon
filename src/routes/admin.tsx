@@ -422,6 +422,34 @@ function AdminPanel() {
   );
 }
 
+function SidebarItem({
+  post,
+  active,
+  onClick,
+}: {
+  post: Post;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full rounded-md border px-3 py-2 text-left text-xs ${
+        active
+          ? "border-primary bg-primary/10 text-foreground"
+          : "border-border text-muted-foreground"
+      }`}
+    >
+      <span className="block truncate font-medium">{post.title || "Untitled"}</span>
+      <span className="text-[10px] uppercase tracking-wide">
+        {post.type}
+        {post.hidden ? " · hidden" : ""}
+      </span>
+    </button>
+  );
+}
+
+
 function Field({
   label,
   value,
