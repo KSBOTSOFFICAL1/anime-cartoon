@@ -121,41 +121,64 @@ function AdminPanel() {
 
 
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-6 md:grid-cols-[240px_1fr]">
-        <aside className="space-y-2">
-          <div className="flex gap-2">
-            <button
-              onClick={() => addPost("movie")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Movie
-            </button>
-            <button
-              onClick={() => addPost("promo")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Promo
-            </button>
-            <button
-              onClick={() => addPost("series")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Series
-            </button>
+        <aside className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Posts
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => addPost("movie")}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+              >
+                <Plus className="h-3 w-3" /> Movie
+              </button>
+              <button
+                onClick={() => addPost("promo")}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+              >
+                <Plus className="h-3 w-3" /> Promo
+              </button>
+              <button
+                onClick={() => addPost("series")}
+                className="flex flex-1 items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
+              >
+                <Plus className="h-3 w-3" /> Series
+              </button>
+            </div>
+            {draft
+              .filter((p) => p.type !== "page")
+              .map((p) => (
+                <SidebarItem
+                  key={p.id}
+                  post={p}
+                  active={p.id === activeId}
+                  onClick={() => setActiveId(p.id)}
+                />
+              ))}
           </div>
-          {draft.map((p) => (
+
+          <div className="space-y-2 border-t border-border pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Pages
+            </p>
             <button
-              key={p.id}
-              onClick={() => setActiveId(p.id)}
-              className={`w-full rounded-md border px-3 py-2 text-left text-xs ${
-                p.id === activeId
-                  ? "border-primary bg-primary/10 text-foreground"
-                  : "border-border text-muted-foreground"
-              }`}
+              onClick={() => addPost("page")}
+              className="flex w-full items-center justify-center gap-1 rounded-md border border-border py-2 text-xs text-foreground"
             >
-              <span className="block truncate font-medium">{p.title || "Untitled"}</span>
-              <span className="text-[10px] uppercase tracking-wide">{p.type}</span>
+              <Plus className="h-3 w-3" /> Add Page
             </button>
-          ))}
+            {draft
+              .filter((p) => p.type === "page")
+              .map((p) => (
+                <SidebarItem
+                  key={p.id}
+                  post={p}
+                  active={p.id === activeId}
+                  onClick={() => setActiveId(p.id)}
+                />
+              ))}
+          </div>
         </aside>
 
         {active ? (
