@@ -1,46 +1,51 @@
 import { useEffect, useState } from "react";
 import { defaultPosts, type Post } from "@/data/content";
-
-const KEY = "atoz-posts-v2";
+import { listPosts, savePostsRemote } from "@/lib/posts.functions";
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
-function read(): Post[] {
-  if (typeof window === "undefined") return defaultPosts;
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return defaultPosts;
-    const parsed = JSON.parse(raw) as Post[];
-    return Array.isArray(parsed) && parsed.length ? parsed : defaultPosts;
-  } catch {
-    return defaultPosts;
-  }
+let cache: Post[] = defaultPosts;
+let loaded = false;
+let inflight: Promise<void> | null = null;
+
+function load(force = false) {
+  if (inflight && !force) return inflight;
+  inflight = listPosts()
+    .then((r) => {
+      cache = r.posts ?? [];
+      loaded = true;
+    })
+    .catch(() => {
+      loaded = true;
+    })
+    .finally(() => {
+      inflight = null;
+      listeners.forEach((l) => l());
+    });
+  return inflight;
 }
 
-export function savePosts(posts: Post[]) {
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(KEY, JSON.stringify(posts));
-  }
+export async function savePosts(posts: Post[]) {
+  cache = posts;
   listeners.forEach((l) => l());
+  const res = await savePostsRemote({ data: { posts } });
+  await load(true);
+  return res;
 }
 
-export function resetPosts() {
-  if (typeof window !== "undefined") window.localStorage.removeItem(KEY);
-  listeners.forEach((l) => l());
-}
-
-/** SSR-safe: renders defaults on the server, hydrates admin edits on the client. */
+/** SSR-safe: hydrates saved posts from the cloud database on the client. */
 export function usePostsState() {
   const [state, setState] = useState<{ posts: Post[]; ready: boolean }>({
-    posts: defaultPosts,
-    ready: false,
+    posts: loaded ? cache : defaultPosts,
+    ready: loaded,
   });
 
   useEffect(() => {
-    const sync = () => setState({ posts: read(), ready: true });
-    sync();
+    const sync = () => setState({ posts: cache, ready: loaded });
     listeners.add(sync);
+    if (loaded) sync();
+    else load();
     return () => {
       listeners.delete(sync);
     };
@@ -52,6 +57,7 @@ export function usePostsState() {
 export function usePosts() {
   return usePostsState().posts;
 }
+
 
 export function emptyPost(type: Post["type"]): Post {
   return {

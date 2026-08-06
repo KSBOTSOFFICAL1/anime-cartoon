@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Plus, Trash2, RotateCcw, Save, LogOut, KeyRound } from "lucide-react";
+import { Plus, Trash2, Save, LogOut, KeyRound } from "lucide-react";
 import type { Post } from "@/data/content";
-import { emptyPost, resetPosts, savePosts, usePosts } from "@/lib/content-store";
+import { emptyPost, savePosts, usePosts } from "@/lib/content-store";
 import { AdminLogin } from "@/components/AdminLogin";
 import { adminChangePassword, adminLogout, getAdminStatus } from "@/lib/admin-gate.functions";
 import { embedUrl } from "@/lib/video";
@@ -60,8 +60,12 @@ function AdminPanel() {
   const update = (patch: Partial<Post>) =>
     setDraft((d) => d.map((p) => (p.id === activeId ? { ...p, ...patch } : p)));
 
-  const commit = () => {
-    savePosts(draft);
+  const commit = async () => {
+    const res = await savePosts(draft);
+    if (res?.ok === false) {
+      alert(res.error ?? "Could not save posts");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   };
@@ -86,12 +90,6 @@ function AdminPanel() {
             >
               View site
             </Link>
-            <button
-              onClick={() => resetPosts()}
-              className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground"
-            >
-              <RotateCcw className="h-3 w-3" /> Reset
-            </button>
             <button
               onClick={commit}
               className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
