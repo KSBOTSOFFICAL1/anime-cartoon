@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Plus, Trash2, RotateCcw, Save, LogOut, KeyRound } from "lucide-react";
+import { Plus, Trash2, Save, LogOut, KeyRound } from "lucide-react";
 import type { Post } from "@/data/content";
-import { emptyPost, resetPosts, savePosts, usePosts } from "@/lib/content-store";
+import { emptyPost, savePosts, usePosts } from "@/lib/content-store";
 import { AdminLogin } from "@/components/AdminLogin";
 import { adminChangePassword, adminLogout, getAdminStatus } from "@/lib/admin-gate.functions";
 import { embedUrl } from "@/lib/video";
