@@ -186,11 +186,27 @@ function AdminPanel() {
             <Field label="Title" value={active.title} onChange={(v) => update({ title: v })} />
             <Field label="Slug (URL)" value={active.slug} onChange={(v) => update({ slug: v })} />
             <Field
-              label="Poster photo link (4:6 vertical)"
+              label={
+                active.type === "page"
+                  ? "Page image link (optional)"
+                  : "Poster photo link (4:6 vertical)"
+              }
               value={active.poster}
               onChange={(v) => update({ poster: v })}
             />
-            {active.type === "promo" ? (
+            {active.type === "page" ? (
+              <label className="block">
+                <span className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Page content
+                </span>
+                <textarea
+                  value={active.content ?? ""}
+                  onChange={(e) => update({ content: e.target.value })}
+                  rows={12}
+                  className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+                />
+              </label>
+            ) : active.type === "promo" ? (
               <>
                 <Field
                   label="Promo video link (YouTube)"
