@@ -105,6 +105,15 @@ function Home() {
       </main>
 
       <footer className="mt-12 border-t border-border bg-card py-5 text-center text-xs text-muted-foreground">
+        {pages.length > 0 ? (
+          <nav className="mb-3 flex flex-wrap justify-center gap-x-4 gap-y-2">
+            {pages.map((p) => (
+              <Link key={p.id} to="/page/$slug" params={{ slug: p.slug }} className="hover:text-primary">
+                {p.title || "Untitled"}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
         Copyright © 2026 <span className="text-primary">Anime Cartoon</span>
       </footer>
     </div>
