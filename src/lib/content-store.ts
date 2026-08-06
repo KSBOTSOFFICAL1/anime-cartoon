@@ -84,6 +84,8 @@ export function emptyPost(type: Post["type"]): Post {
     promoVideo: "",
     showViews: true,
     allowComments: true,
+    content: "",
+    hidden: false,
   };
 }
 
