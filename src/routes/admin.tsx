@@ -87,12 +87,6 @@ function AdminPanel() {
               View site
             </Link>
             <button
-              onClick={() => resetPosts()}
-              className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground"
-            >
-              <RotateCcw className="h-3 w-3" /> Reset
-            </button>
-            <button
               onClick={commit}
               className="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
             >
