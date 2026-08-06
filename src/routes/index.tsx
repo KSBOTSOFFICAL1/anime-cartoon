@@ -28,15 +28,18 @@ function Home() {
   const [query, setQuery] = useState("");
   const [term, setTerm] = useState("");
 
+  const visible = useMemo(() => posts.filter((p) => !p.hidden), [posts]);
+
   const filtered = useMemo(() => {
     const t = term.trim().toLowerCase();
-    if (!t) return posts;
-    return posts.filter((p) => p.title.toLowerCase().includes(t));
-  }, [posts, term]);
+    if (!t) return visible;
+    return visible.filter((p) => p.title.toLowerCase().includes(t));
+  }, [visible, term]);
 
   const movies = filtered.filter((p) => p.type === "movie");
   const series = filtered.filter((p) => p.type === "series");
   const promos = filtered.filter((p) => p.type === "promo");
+  const pages = visible.filter((p) => p.type === "page");
 
   return (
     <div className="min-h-screen bg-background pb-16">
