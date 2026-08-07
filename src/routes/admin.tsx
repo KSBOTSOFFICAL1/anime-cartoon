@@ -448,20 +448,24 @@ function SidebarItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-md border px-3 py-2 text-left text-xs ${
+      className={`flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-left text-xs ${
         active
           ? "border-primary bg-primary/10 text-foreground"
           : "border-border text-muted-foreground"
       }`}
     >
-      <span className="block truncate font-medium">{post.title || "Untitled"}</span>
-      <span className="text-[10px] uppercase tracking-wide">
-        {post.type}
-        {post.hidden ? " · hidden" : ""}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-medium">{post.title || "Untitled"}</span>
+        <span className="text-[10px] uppercase tracking-wide">
+          {post.type}
+          {post.hidden ? " · hidden" : ""}
+        </span>
       </span>
+      <Pencil className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
     </button>
   );
 }
+
 
 
 function Field({
