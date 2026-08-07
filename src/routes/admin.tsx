@@ -400,20 +400,37 @@ function AdminPanel() {
               onChange={(v) => update({ hidden: v })}
             />
 
-            <button
-              onClick={() => {
-                const next = draft.filter((p) => p.id !== activeId);
-                setDraft(next);
-                setActiveId(next[0]?.id ?? "");
-              }}
-              className="flex items-center gap-1 text-xs font-medium text-destructive"
-            >
-              <Trash2 className="h-3 w-3" /> Delete this {active.type === "page" ? "page" : "post"}
-            </button>
+            <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
+              <button
+                onClick={commit}
+                className="flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                <Save className="h-3 w-3" /> {saved ? "Saved!" : "Save Post"}
+              </button>
+              <button
+                onClick={() => setActiveId("")}
+                className="rounded-md border border-border px-3 py-2 text-xs text-muted-foreground"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const next = draft.filter((p) => p.id !== activeId);
+                  setDraft(next);
+                  setActiveId("");
+                }}
+                className="flex items-center gap-1 text-xs font-medium text-destructive"
+              >
+                <Trash2 className="h-3 w-3" /> Delete this {active.type === "page" ? "page" : "post"}
+              </button>
+            </div>
           </section>
         ) : (
-          <p className="text-sm text-muted-foreground">No posts. Add one to get started.</p>
+          <p className="text-sm text-muted-foreground">
+            {saved ? "Saved!" : "Select a post from the list to edit it."}
+          </p>
         )}
+
       </div>
     </div>
   );
