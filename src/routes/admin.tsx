@@ -336,43 +336,68 @@ function AdminPanel() {
                   onChange={(v) => update({ downloadUrl: v })}
                 />
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <p className="text-xs font-medium text-muted-foreground">Episodes</p>
-                  {active.episodes.map((ep, i) => (
-                    <div key={i} className="flex gap-2">
-                      <input
-                        value={ep.label}
-                        onChange={(e) =>
-                          update({
-                            episodes: active.episodes.map((x, j) =>
-                              j === i ? { ...x, label: e.target.value } : x,
-                            ),
-                          })
-                        }
-                        className="h-9 w-36 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                      />
-                      <input
-                        value={ep.url}
-                        onChange={(e) =>
-                          update({
-                            episodes: active.episodes.map((x, j) =>
-                              j === i ? { ...x, url: e.target.value } : x,
-                            ),
-                          })
-                        }
-                        className="h-9 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                      />
-                      <button
-                        onClick={() =>
-                          update({ episodes: active.episodes.filter((_, j) => j !== i) })
-                        }
-                        className="rounded-md border border-border px-2 text-muted-foreground"
-                        aria-label="Remove episode"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
+                  {active.episodes.map((ep, i) => {
+                    const patch = (v: Partial<typeof ep>) =>
+                      update({
+                        episodes: active.episodes.map((x, j) => (j === i ? { ...x, ...v } : x)),
+                      });
+                    return (
+                      <div key={i} className="space-y-2 rounded-lg border border-border p-3">
+                        <div className="flex items-center gap-2">
+                          <input
+                            value={ep.label}
+                            onChange={(e) => patch({ label: e.target.value })}
+                            placeholder="Episode 01 - Title"
+                            className="h-9 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <button
+                            onClick={() =>
+                              update({ episodes: active.episodes.filter((_, j) => j !== i) })
+                            }
+                            className="rounded-md border border-border px-2 py-2 text-muted-foreground"
+                            aria-label="Remove episode"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <input
+                          value={ep.thumbnail ?? ""}
+                          onChange={(e) => patch({ thumbnail: e.target.value })}
+                          placeholder="Episode thumbnail image link"
+                          className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <textarea
+                          value={ep.description ?? ""}
+                          onChange={(e) => patch({ description: e.target.value })}
+                          placeholder="Episode description"
+                          rows={2}
+                          className="w-full rounded-md border border-border bg-background p-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
+                          value={ep.telegramUrl ?? ep.url ?? ""}
+                          onChange={(e) => patch({ telegramUrl: e.target.value, url: e.target.value })}
+                          placeholder="Telegram download link"
+                          className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
+                          value={ep.driveUrl ?? ""}
+                          onChange={(e) => patch({ driveUrl: e.target.value })}
+                          placeholder="Google Drive download link"
+                          className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <input
+                            type="checkbox"
+                            checked={ep.isNew === true}
+                            onChange={(e) => patch({ isNew: e.target.checked })}
+                          />
+                          Mark as NEW!
+                        </label>
+                      </div>
+                    );
+                  })}
                   <button
                     onClick={() =>
                       update({

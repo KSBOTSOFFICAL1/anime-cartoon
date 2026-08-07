@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Download } from "lucide-react";
-import { useState } from "react";
 import type { Post } from "@/data/content";
+import { EpisodeAccordion } from "@/components/EpisodeAccordion";
 
 export function PostDetail({ post }: { post: Post }) {
-  const [episode, setEpisode] = useState(0);
   const isSeries = post.type === "series";
-  const link = isSeries ? (post.episodes[episode]?.url ?? "#") : post.downloadUrl || "#";
+  const link = post.downloadUrl || "#";
 
   const rows: [string, string][] = isSeries
     ? [
@@ -78,69 +77,55 @@ export function PostDetail({ post }: { post: Post }) {
           ))}
         </dl>
 
-        {isSeries && post.episodes.length > 0 ? (
-          <div className="mt-6">
-            <label className="text-sm text-muted-foreground" htmlFor="ep">
-              Select Episode:
-            </label>
-            <select
-              id="ep"
-              value={episode}
-              onChange={(e) => setEpisode(Number(e.target.value))}
-              className="mt-2 h-11 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-            >
-              {post.episodes.map((ep, i) => (
-                <option key={ep.label} value={i}>
-                  {ep.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
+        {isSeries ? (
+          <EpisodeAccordion episodes={post.episodes} />
+        ) : (
+          <>
+            <h2 className="mt-8 border-l-4 border-primary pl-3 text-lg font-bold uppercase tracking-wide text-foreground">
+              Download Links
+            </h2>
 
-        <h2 className="mt-8 border-l-4 border-primary pl-3 text-lg font-bold uppercase tracking-wide text-foreground">
-          Download Links
-        </h2>
-
-        <div className="mt-3 space-y-3 rounded-xl border border-border bg-card p-3">
-          {post.downloadImage || post.poster ? (
-            <img
-              src={post.downloadImage || post.poster}
-              alt=""
-              loading="lazy"
-              className="h-40 w-full rounded-lg object-cover"
-            />
-          ) : null}
-          <a
-            href={link}
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-12 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]"
-          >
-            <Download className="h-4 w-4" />
-            {isSeries ? "Download Episode" : "Download 1080p"}
-          </a>
-          {post.driveUrl ? (
-            <a
-              href={post.driveUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex h-12 items-center justify-center gap-2 rounded-lg bg-secondary text-sm font-semibold text-secondary-foreground"
-            >
-              <Download className="h-4 w-4" /> Google Drive Download
-            </a>
-          ) : null}
-          {post.telegramUrl ? (
-            <a
-              href={post.telegramUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex h-12 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-accent-foreground"
-            >
-              <Download className="h-4 w-4" /> Telegram Bot Download
-            </a>
-          ) : null}
-        </div>
+            <div className="mt-3 space-y-3 rounded-xl border border-border bg-card p-3">
+              {post.downloadImage || post.poster ? (
+                <img
+                  src={post.downloadImage || post.poster}
+                  alt=""
+                  loading="lazy"
+                  className="h-40 w-full rounded-lg object-cover"
+                />
+              ) : null}
+              <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-12 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)]"
+              >
+                <Download className="h-4 w-4" />
+                Download 1080p
+              </a>
+              {post.driveUrl ? (
+                <a
+                  href={post.driveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-12 items-center justify-center gap-2 rounded-lg bg-secondary text-sm font-semibold text-secondary-foreground"
+                >
+                  <Download className="h-4 w-4" /> Google Drive Download
+                </a>
+              ) : null}
+              {post.telegramUrl ? (
+                <a
+                  href={post.telegramUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-12 items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-accent-foreground"
+                >
+                  <Download className="h-4 w-4" /> Telegram Bot Download
+                </a>
+              ) : null}
+            </div>
+          </>
+        )}
       </div>
 
       <footer className="mt-12 border-t border-border bg-card py-5 text-center text-xs text-muted-foreground">

@@ -1,4 +1,12 @@
-export type Episode = { label: string; url: string };
+export type Episode = {
+  label: string;
+  url: string;
+  thumbnail?: string;
+  description?: string;
+  telegramUrl?: string;
+  driveUrl?: string;
+  isNew?: boolean;
+};
 
 export const TELEGRAM_JOIN_URL = "https://t.me/+-rRx3CW3SvEyNWY9";
 
