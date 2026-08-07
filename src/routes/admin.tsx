@@ -100,9 +100,13 @@ function AdminPanel() {
               View site
             </Link>
             <button
-
+              onClick={async () => {
+                await logout({});
+                window.location.reload();
+              }}
               className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground"
             >
+
               <LogOut className="h-3 w-3" /> Logout
             </button>
           </div>
