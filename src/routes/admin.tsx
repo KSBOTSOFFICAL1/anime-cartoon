@@ -44,7 +44,7 @@ function Admin() {
 function AdminPanel() {
   const stored = usePosts();
   const [draft, setDraft] = useState<Post[]>(stored);
-  const [activeId, setActiveId] = useState<string>(stored[0]?.id ?? "");
+  const [activeId, setActiveId] = useState<string>("");
   const [saved, setSaved] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const logout = useServerFn(adminLogout);
@@ -52,7 +52,7 @@ function AdminPanel() {
 
   useEffect(() => {
     setDraft(stored);
-    setActiveId((id) => (stored.some((p) => p.id === id) ? id : (stored[0]?.id ?? "")));
+    setActiveId((id) => (stored.some((p) => p.id === id) ? id : ""));
   }, [stored]);
 
   const active = draft.find((p) => p.id === activeId);
@@ -67,8 +67,10 @@ function AdminPanel() {
       return;
     }
     setSaved(true);
+    setActiveId("");
     setTimeout(() => setSaved(false), 1800);
   };
+
 
   const addPost = (type: Post["type"]) => {
     const p = emptyPost(type);
