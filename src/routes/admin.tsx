@@ -702,7 +702,7 @@ function SliderControls({
         onChange={(v) =>
           patch({
             enabled: v,
-            publishedAt: v && !slider.publishedAt ? new Date().toISOString() : slider.publishedAt,
+            publishedAt: slider.publishedAt || (v ? new Date().toISOString() : ""),
           })
         }
       />
