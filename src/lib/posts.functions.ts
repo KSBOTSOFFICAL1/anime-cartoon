@@ -23,6 +23,21 @@ export const listPosts = createServerFn({ method: "GET" }).handler(async () => {
   return { posts: (data ?? []).map((r) => r.data as unknown as Post) };
 });
 
+/** Public, read-only lookup used by route loaders so metadata is server-rendered. */
+export const getPostBySlug = createServerFn({ method: "GET" })
+  .inputValidator((data: { slug: string; type?: string }) => ({
+    slug: String(data.slug ?? "").slice(0, 120),
+    type: data.type ? String(data.type).slice(0, 20) : undefined,
+  }))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let query = supabaseAdmin.from("posts").select("data").eq("slug", data.slug);
+    if (data.type) query = query.eq("type", data.type);
+    const { data: rows, error } = await query.limit(1);
+    if (error || !rows?.length) return { post: null as Post | null };
+    return { post: rows[0]!.data as unknown as Post };
+  });
+
 export const savePostsRemote = createServerFn({ method: "POST" })
   .inputValidator((data: { posts: Post[] }) => data)
   .handler(async ({ data }) => {
@@ -51,5 +66,33 @@ export const savePostsRemote = createServerFn({ method: "POST" })
       await supabaseAdmin.from("posts").delete().neq("id", "");
     }
 
+    return { ok: true as const };
+  });
+
+/**
+ * Records slider rotation state (last_shown_at) on the EXISTING post records.
+ * Never inserts or duplicates content rows.
+ */
+export const touchSliderShown = createServerFn({ method: "POST" })
+  .inputValidator((data: { ids: string[] }) => ({
+    ids: (data.ids ?? []).slice(0, 24).map((id) => String(id).slice(0, 64)),
+  }))
+  .handler(async ({ data }) => {
+    if (!data.ids.length) return { ok: true as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows } = await supabaseAdmin
+      .from("posts")
+      .select("id, data")
+      .in("id", data.ids);
+    const now = new Date().toISOString();
+    for (const row of rows ?? []) {
+      const post = row.data as unknown as Post;
+      if (!post?.slider?.enabled) continue;
+      post.slider = { ...post.slider, lastShownAt: now };
+      await supabaseAdmin
+        .from("posts")
+        .update({ data: JSON.parse(JSON.stringify(post)) })
+        .eq("id", row.id);
+    }
     return { ok: true as const };
   });

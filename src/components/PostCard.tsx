@@ -7,7 +7,11 @@ export function PostCard({ post }: { post: Post }) {
       ? "/movies/$slug"
       : post.type === "series"
         ? "/series/$slug"
-        : "/promo/$slug";
+        : post.type === "anime"
+          ? "/anime/$slug"
+          : post.type === "animation"
+            ? "/animation/$slug"
+            : "/promo/$slug";
   return (
     <Link
       to={to}
