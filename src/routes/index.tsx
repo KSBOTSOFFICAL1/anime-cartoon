@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PostCard } from "@/components/PostCard";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { TopSlider } from "@/components/TopSlider";
 import { usePosts } from "@/lib/content-store";
 
 
@@ -40,6 +41,8 @@ function Home() {
   const movies = filtered.filter((p) => p.type === "movie");
   const series = filtered.filter((p) => p.type === "series");
   const promos = filtered.filter((p) => p.type === "promo");
+  const anime = filtered.filter((p) => p.type === "anime");
+  const animation = filtered.filter((p) => p.type === "animation");
   const pages = visible.filter((p) => p.type === "page");
 
   return (
@@ -74,6 +77,8 @@ function Home() {
 
 
       <main className="mx-auto max-w-5xl px-4">
+        <TopSlider posts={visible} />
+
         <Section title="🎬 Movies" count={`Showing ${movies.length}`}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {movies.map((p) => (
@@ -86,6 +91,26 @@ function Home() {
           <Section title="🎬 New Promo" count={`Showing ${promos.length}`}>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {promos.map((p) => (
+                <PostCard key={p.id} post={p} />
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {anime.length > 0 ? (
+          <Section title="🎌 Anime" count={`Showing ${anime.length}`}>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {anime.map((p) => (
+                <PostCard key={p.id} post={p} />
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {animation.length > 0 ? (
+          <Section title="🎭 Animation" count={`Showing ${animation.length}`}>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {animation.map((p) => (
                 <PostCard key={p.id} post={p} />
               ))}
             </div>

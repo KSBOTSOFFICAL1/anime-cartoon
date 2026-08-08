@@ -2,16 +2,20 @@ import { Link } from "@tanstack/react-router";
 import { Download } from "lucide-react";
 import type { Post } from "@/data/content";
 import { EpisodeAccordion } from "@/components/EpisodeAccordion";
+import { SeasonList } from "@/components/SeasonList";
 
 export function PostDetail({ post }: { post: Post }) {
-  const isSeries = post.type === "series";
+  const isShow = post.type === "anime" || post.type === "animation";
+  const isSeries = post.type === "series" || isShow;
   const link = post.downloadUrl || "#";
 
   const rows: [string, string][] = isSeries
     ? [
         ["Series Name", post.title],
         ["Release Date", post.releaseDate],
-        ["Total Parts", `${post.episodes.length} Episodes`],
+        ["Total Parts", post.totalEpisodes || `${post.episodes.length} Episodes`],
+        ...(post.seasonNo ? ([["Season", post.seasonNo]] as [string, string][]) : []),
+        ...(post.subtitle ? ([["Subtitle", post.subtitle]] as [string, string][]) : []),
         ["Duration", post.duration],
         ["File Size", post.fileSize],
         ["Languages", post.languages],
@@ -77,7 +81,40 @@ export function PostDetail({ post }: { post: Post }) {
           ))}
         </dl>
 
-        {isSeries ? (
+        {post.description ? (
+          <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{post.description}</p>
+        ) : null}
+
+        {isShow ? (
+          <>
+            <SeasonList post={post} />
+            {(post.movieLinks ?? []).length > 0 ? (
+              <section className="mt-8 space-y-3">
+                <h2 className="border-l-4 border-primary pl-3 text-lg font-bold uppercase tracking-wide text-foreground">
+                  Movies
+                </h2>
+                {(post.movieLinks ?? []).map((m, i) => (
+                  <div key={i} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+                    {m.photo ? (
+                      <img src={m.photo} alt={m.name} loading="lazy" className="h-16 w-28 rounded-lg object-cover" />
+                    ) : null}
+                    <p className="min-w-0 flex-1 text-sm font-semibold text-card-foreground">{m.name}</p>
+                    {m.url ? (
+                      <a
+                        href={m.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+                      >
+                        Download
+                      </a>
+                    ) : null}
+                  </div>
+                ))}
+              </section>
+            ) : null}
+          </>
+        ) : isSeries ? (
           <EpisodeAccordion episodes={post.episodes} />
         ) : (
           <>
