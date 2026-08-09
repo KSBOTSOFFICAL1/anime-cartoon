@@ -43,13 +43,14 @@ export const adminLogin = createServerFn({ method: "POST" })
       .eq("id", "admin")
       .maybeSingle();
 
-    let ok = false;
-    if (row) {
+    const expected = process.env["ADMIN_PASSWORD"];
+    if (!expected && !row) throw new Error("ADMIN_PASSWORD is not set");
+
+    // The environment variable is authoritative so changing ADMIN_PASSWORD
+    // immediately invalidates any older database-stored override.
+    let ok = expected ? safeEqual(data.password.trim(), expected.trim()) : false;
+    if (!ok && row) {
       ok = safeEqual(hashWith(data.password, row.password_salt), row.password_hash);
-    } else {
-      const expected = process.env["ADMIN_PASSWORD"];
-      if (!expected) throw new Error("ADMIN_PASSWORD is not set");
-      ok = safeEqual(data.password, expected);
     }
 
     if (!ok) return { ok: false as const };
