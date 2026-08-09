@@ -62,7 +62,7 @@ export function AdminLogin({ onUnlocked, setupRequired = false }: { onUnlocked: 
           disabled={busy}
           className="h-11 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-60"
         >
-          {busy ? "Checking..." : "Login"}
+          {busy ? "Saving..." : setupRequired ? "Create Password" : "Login"}
         </button>
       </form>
     </div>

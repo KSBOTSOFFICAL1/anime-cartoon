@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 type AdminSession = { unlocked?: boolean };
 
-type AdminRow = { password_hash: string | null };
+type AdminRow = { password_hash: string | null; setup_completed: boolean | null };
 
 function config() {
   return {
@@ -19,7 +19,7 @@ async function getAdminRow(): Promise<AdminRow | null> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("admin_settings")
-    .select("password_hash")
+    .select("password_hash, setup_completed")
     .eq("id", "admin")
     .maybeSingle();
   if (error) throw new Error("Could not read admin settings");
@@ -44,7 +44,7 @@ export const adminCreatePassword = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const passwordHash = await bcrypt.hash(data.password, 12);
     const { error } = await supabaseAdmin.from("admin_settings").upsert(
-      { id: "admin", password_hash: passwordHash, password_salt: "bcrypt", updated_at: new Date().toISOString() },
+      { id: "admin", password_hash: passwordHash, password_salt: "bcrypt", setup_completed: true, updated_at: new Date().toISOString() },
       { onConflict: "id", ignoreDuplicates: true },
     );
     if (error) return { ok: false as const, error: "Could not save admin password" };
@@ -81,15 +81,14 @@ export const adminChangePassword = createServerFn({ method: "POST" })
     if (!currentOk) return { ok: false as const, error: "Current password is incorrect" };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("admin_settings").update(
-      {
+    const { error } = await supabaseAdmin
+      .from("admin_settings")
+      .update({
         password_hash: await bcrypt.hash(data.newPassword, 12),
         password_salt: "bcrypt",
         updated_at: new Date().toISOString(),
-      },
-    ).eq("id", "admin");
-      { onConflict: "id" },
-    );
+      })
+      .eq("id", "admin");
     if (error) return { ok: false as const, error: "Could not save new password" };
     return { ok: true as const };
   });
