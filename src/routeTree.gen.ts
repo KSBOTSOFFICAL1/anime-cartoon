@@ -14,13 +14,13 @@ import { Route as VerifyFileDothtmlRouteImport } from './routes/$verifyFile[.]ht
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AdminPreviewSlugRouteImport } from './routes/admin-preview.$slug'
 import { Route as AnimationSlugRouteImport } from './routes/animation.$slug'
 import { Route as AnimeSlugRouteImport } from './routes/anime.$slug'
 import { Route as MoviesSlugRouteImport } from './routes/movies.$slug'
 import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as PromoSlugRouteImport } from './routes/promo.$slug'
 import { Route as SeriesSlugRouteImport } from './routes/series.$slug'
-import { Route as AdminPreviewSlugRouteImport } from './routes/admin.preview.$slug'
 import { Route as AnimationSlugSeasonSeasonRouteImport } from './routes/animation.$slug.season.$season'
 import { Route as AnimeSlugSeasonSeasonRouteImport } from './routes/anime.$slug.season.$season'
 import { Route as AnimeSlugSeasonSeasonEpisodeEpisodeRouteImport } from './routes/anime.$slug.season.$season.episode.$episode'
@@ -48,6 +48,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPreviewSlugRoute = AdminPreviewSlugRouteImport.update({
+  id: '/admin-preview/$slug',
+  path: '/admin-preview/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimationSlugRoute = AnimationSlugRouteImport.update({
@@ -80,11 +85,6 @@ const SeriesSlugRoute = SeriesSlugRouteImport.update({
   path: '/series/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPreviewSlugRoute = AdminPreviewSlugRouteImport.update({
-  id: '/preview/$slug',
-  path: '/preview/$slug',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AnimationSlugSeasonSeasonRoute =
   AnimationSlugSeasonSeasonRouteImport.update({
     id: '/season/$season',
@@ -106,16 +106,16 @@ const AnimeSlugSeasonSeasonEpisodeEpisodeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$verifyFile.html': typeof VerifyFileDothtmlRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin-preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
   '/anime/$slug': typeof AnimeSlugRouteWithChildren
   '/movies/$slug': typeof MoviesSlugRoute
   '/page/$slug': typeof PageSlugRoute
   '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
-  '/admin/preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug/season/$season': typeof AnimationSlugSeasonSeasonRoute
   '/anime/$slug/season/$season': typeof AnimeSlugSeasonSeasonRouteWithChildren
   '/anime/$slug/season/$season/episode/$episode': typeof AnimeSlugSeasonSeasonEpisodeEpisodeRoute
@@ -123,16 +123,16 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$verifyFile.html': typeof VerifyFileDothtmlRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin-preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
   '/anime/$slug': typeof AnimeSlugRouteWithChildren
   '/movies/$slug': typeof MoviesSlugRoute
   '/page/$slug': typeof PageSlugRoute
   '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
-  '/admin/preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug/season/$season': typeof AnimationSlugSeasonSeasonRoute
   '/anime/$slug/season/$season': typeof AnimeSlugSeasonSeasonRouteWithChildren
   '/anime/$slug/season/$season/episode/$episode': typeof AnimeSlugSeasonSeasonEpisodeEpisodeRoute
@@ -141,16 +141,16 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$verifyFile.html': typeof VerifyFileDothtmlRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin-preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
   '/anime/$slug': typeof AnimeSlugRouteWithChildren
   '/movies/$slug': typeof MoviesSlugRoute
   '/page/$slug': typeof PageSlugRoute
   '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
-  '/admin/preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug/season/$season': typeof AnimationSlugSeasonSeasonRoute
   '/anime/$slug/season/$season': typeof AnimeSlugSeasonSeasonRouteWithChildren
   '/anime/$slug/season/$season/episode/$episode': typeof AnimeSlugSeasonSeasonEpisodeEpisodeRoute
@@ -163,13 +163,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin-preview/$slug'
     | '/animation/$slug'
     | '/anime/$slug'
     | '/movies/$slug'
     | '/page/$slug'
     | '/promo/$slug'
     | '/series/$slug'
-    | '/admin/preview/$slug'
     | '/animation/$slug/season/$season'
     | '/anime/$slug/season/$season'
     | '/anime/$slug/season/$season/episode/$episode'
@@ -180,13 +180,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin-preview/$slug'
     | '/animation/$slug'
     | '/anime/$slug'
     | '/movies/$slug'
     | '/page/$slug'
     | '/promo/$slug'
     | '/series/$slug'
-    | '/admin/preview/$slug'
     | '/animation/$slug/season/$season'
     | '/anime/$slug/season/$season'
     | '/anime/$slug/season/$season/episode/$episode'
@@ -197,13 +197,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin-preview/$slug'
     | '/animation/$slug'
     | '/anime/$slug'
     | '/movies/$slug'
     | '/page/$slug'
     | '/promo/$slug'
     | '/series/$slug'
-    | '/admin/preview/$slug'
     | '/animation/$slug/season/$season'
     | '/anime/$slug/season/$season'
     | '/anime/$slug/season/$season/episode/$episode'
@@ -212,9 +212,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   VerifyFileDothtmlRoute: typeof VerifyFileDothtmlRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRoute: typeof AdminRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminPreviewSlugRoute: typeof AdminPreviewSlugRoute
   AnimationSlugRoute: typeof AnimationSlugRouteWithChildren
   AnimeSlugRoute: typeof AnimeSlugRouteWithChildren
   MoviesSlugRoute: typeof MoviesSlugRoute
@@ -260,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-preview/$slug': {
+      id: '/admin-preview/$slug'
+      path: '/admin-preview/$slug'
+      fullPath: '/admin-preview/$slug'
+      preLoaderRoute: typeof AdminPreviewSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animation/$slug': {
       id: '/animation/$slug'
       path: '/animation/$slug'
@@ -302,13 +310,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeriesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/preview/$slug': {
-      id: '/admin/preview/$slug'
-      path: '/preview/$slug'
-      fullPath: '/admin/preview/$slug'
-      preLoaderRoute: typeof AdminPreviewSlugRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/animation/$slug/season/$season': {
       id: '/animation/$slug/season/$season'
       path: '/season/$season'
@@ -332,16 +333,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AdminRouteChildren {
-  AdminPreviewSlugRoute: typeof AdminPreviewSlugRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminPreviewSlugRoute: AdminPreviewSlugRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AnimationSlugRouteChildren {
   AnimationSlugSeasonSeasonRoute: typeof AnimationSlugSeasonSeasonRoute
@@ -384,9 +375,10 @@ const AnimeSlugRouteWithChildren = AnimeSlugRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   VerifyFileDothtmlRoute: VerifyFileDothtmlRoute,
-  AdminRoute: AdminRouteWithChildren,
+  AdminRoute: AdminRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminPreviewSlugRoute: AdminPreviewSlugRoute,
   AnimationSlugRoute: AnimationSlugRouteWithChildren,
   AnimeSlugRoute: AnimeSlugRouteWithChildren,
   MoviesSlugRoute: MoviesSlugRoute,

@@ -227,17 +227,51 @@ function AdminPanel() {
               onChange={(v) => update({ poster: v })}
             />
             {active.type === "page" ? (
-              <label className="block">
-                <span className="mb-1 block text-xs font-medium text-muted-foreground">
-                  Page content
-                </span>
-                <textarea
-                  value={active.content ?? ""}
-                  onChange={(e) => update({ content: e.target.value })}
-                  rows={12}
-                  className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+              <>
+                <CodeEditor
+                  label="HTML Code"
+                  value={active.pageHtml ?? ""}
+                  onChange={(v) => update({ pageHtml: v })}
                 />
-              </label>
+                <CodeEditor
+                  label="CSS Code"
+                  value={active.pageCss ?? ""}
+                  onChange={(v) => update({ pageCss: v })}
+                />
+                <CodeEditor
+                  label="JavaScript Code"
+                  value={active.pageJs ?? ""}
+                  onChange={(v) => update({ pageJs: v })}
+                />
+                <Toggle
+                  label="Status (Enabled pages are public)"
+                  checked={active.enabled !== false}
+                  onChange={(v) => update({ enabled: v })}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href={`/admin-preview/${active.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground"
+                  >
+                    Preview
+                  </a>
+                  {active.enabled !== false ? (
+                    <a
+                      href={`/page/${active.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground"
+                    >
+                      Open public page
+                    </a>
+                  ) : null}
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Save first, then preview. Preview only works while you are logged in as admin.
+                </p>
+              </>
             ) : active.type === "promo" ? (
               <>
                 <Field
@@ -492,11 +526,13 @@ function AdminPanel() {
               <SliderControls post={active} update={update} />
             ) : null}
 
-            <Toggle
-              label="Hide from home page (link still opens)"
-              checked={active.hidden === true}
-              onChange={(v) => update({ hidden: v })}
-            />
+            {active.type !== "page" ? (
+              <Toggle
+                label="Hide from home page (link still opens)"
+                checked={active.hidden === true}
+                onChange={(v) => update({ hidden: v })}
+              />
+            ) : null}
 
             <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
               <button
@@ -555,8 +591,14 @@ function SidebarItem({
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium">{post.title || "Untitled"}</span>
         <span className="text-[10px] uppercase tracking-wide">
-          {post.type}
-          {post.hidden ? " · hidden" : ""}
+          {post.type === "page" ? `/page/${post.slug}` : post.type}
+          {post.type === "page"
+            ? post.enabled === false
+              ? " · disabled"
+              : " · enabled"
+            : post.hidden
+              ? " · hidden"
+              : ""}
         </span>
       </span>
       <Pencil className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -582,6 +624,29 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
+      />
+    </label>
+  );
+}
+
+function CodeEditor({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
+        rows={10}
+        className="w-full rounded-md border border-border bg-background p-3 font-mono text-xs leading-relaxed text-foreground outline-none focus:ring-2 focus:ring-ring"
       />
     </label>
   );
