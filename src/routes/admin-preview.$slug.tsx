@@ -5,7 +5,7 @@ import type { Post } from "@/data/content";
 import { getPagePreview } from "@/lib/posts.functions";
 import { CustomPageRender } from "@/components/CustomPageRender";
 
-export const Route = createFileRoute("/admin/preview/$slug")({
+export const Route = createFileRoute("/admin-preview/$slug")({
   ssr: false,
   head: () => ({
     meta: [
@@ -84,7 +84,7 @@ function PreviewPage() {
             className="mb-6 w-full rounded-xl border border-border object-cover"
           />
         ) : null}
-        <CustomPageRender html={post.pageHtml} css={post.pageCss} js={post.pageJs} />
+        <CustomPageRender html={post.pageHtml ?? ""} css={post.pageCss ?? ""} js={post.pageJs ?? ""} />
       </main>
     </div>
   );

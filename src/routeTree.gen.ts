@@ -20,6 +20,7 @@ import { Route as MoviesSlugRouteImport } from './routes/movies.$slug'
 import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as PromoSlugRouteImport } from './routes/promo.$slug'
 import { Route as SeriesSlugRouteImport } from './routes/series.$slug'
+import { Route as AdminPreviewSlugRouteImport } from './routes/admin.preview.$slug'
 import { Route as AnimationSlugSeasonSeasonRouteImport } from './routes/animation.$slug.season.$season'
 import { Route as AnimeSlugSeasonSeasonRouteImport } from './routes/anime.$slug.season.$season'
 import { Route as AnimeSlugSeasonSeasonEpisodeEpisodeRouteImport } from './routes/anime.$slug.season.$season.episode.$episode'
@@ -79,6 +80,11 @@ const SeriesSlugRoute = SeriesSlugRouteImport.update({
   path: '/series/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPreviewSlugRoute = AdminPreviewSlugRouteImport.update({
+  id: '/preview/$slug',
+  path: '/preview/$slug',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AnimationSlugSeasonSeasonRoute =
   AnimationSlugSeasonSeasonRouteImport.update({
     id: '/season/$season',
@@ -100,7 +106,7 @@ const AnimeSlugSeasonSeasonEpisodeEpisodeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$verifyFile.html': typeof VerifyFileDothtmlRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/page/$slug': typeof PageSlugRoute
   '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
+  '/admin/preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug/season/$season': typeof AnimationSlugSeasonSeasonRoute
   '/anime/$slug/season/$season': typeof AnimeSlugSeasonSeasonRouteWithChildren
   '/anime/$slug/season/$season/episode/$episode': typeof AnimeSlugSeasonSeasonEpisodeEpisodeRoute
@@ -116,7 +123,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$verifyFile.html': typeof VerifyFileDothtmlRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/page/$slug': typeof PageSlugRoute
   '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
+  '/admin/preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug/season/$season': typeof AnimationSlugSeasonSeasonRoute
   '/anime/$slug/season/$season': typeof AnimeSlugSeasonSeasonRouteWithChildren
   '/anime/$slug/season/$season/episode/$episode': typeof AnimeSlugSeasonSeasonEpisodeEpisodeRoute
@@ -133,7 +141,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$verifyFile.html': typeof VerifyFileDothtmlRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/page/$slug': typeof PageSlugRoute
   '/promo/$slug': typeof PromoSlugRoute
   '/series/$slug': typeof SeriesSlugRoute
+  '/admin/preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug/season/$season': typeof AnimationSlugSeasonSeasonRoute
   '/anime/$slug/season/$season': typeof AnimeSlugSeasonSeasonRouteWithChildren
   '/anime/$slug/season/$season/episode/$episode': typeof AnimeSlugSeasonSeasonEpisodeEpisodeRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/page/$slug'
     | '/promo/$slug'
     | '/series/$slug'
+    | '/admin/preview/$slug'
     | '/animation/$slug/season/$season'
     | '/anime/$slug/season/$season'
     | '/anime/$slug/season/$season/episode/$episode'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/page/$slug'
     | '/promo/$slug'
     | '/series/$slug'
+    | '/admin/preview/$slug'
     | '/animation/$slug/season/$season'
     | '/anime/$slug/season/$season'
     | '/anime/$slug/season/$season/episode/$episode'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/page/$slug'
     | '/promo/$slug'
     | '/series/$slug'
+    | '/admin/preview/$slug'
     | '/animation/$slug/season/$season'
     | '/anime/$slug/season/$season'
     | '/anime/$slug/season/$season/episode/$episode'
@@ -200,7 +212,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   VerifyFileDothtmlRoute: typeof VerifyFileDothtmlRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AnimationSlugRoute: typeof AnimationSlugRouteWithChildren
@@ -290,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeriesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/preview/$slug': {
+      id: '/admin/preview/$slug'
+      path: '/preview/$slug'
+      fullPath: '/admin/preview/$slug'
+      preLoaderRoute: typeof AdminPreviewSlugRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/animation/$slug/season/$season': {
       id: '/animation/$slug/season/$season'
       path: '/season/$season'
@@ -313,6 +332,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminPreviewSlugRoute: typeof AdminPreviewSlugRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminPreviewSlugRoute: AdminPreviewSlugRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AnimationSlugRouteChildren {
   AnimationSlugSeasonSeasonRoute: typeof AnimationSlugSeasonSeasonRoute
@@ -355,7 +384,7 @@ const AnimeSlugRouteWithChildren = AnimeSlugRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   VerifyFileDothtmlRoute: VerifyFileDothtmlRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AnimationSlugRoute: AnimationSlugRouteWithChildren,

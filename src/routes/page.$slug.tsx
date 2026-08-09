@@ -82,7 +82,7 @@ function PageView() {
           />
         ) : null}
         {post.pageHtml || post.pageCss || post.pageJs ? (
-          <CustomPageRender html={post.pageHtml} css={post.pageCss} js={post.pageJs} />
+          <CustomPageRender html={post.pageHtml ?? ""} css={post.pageCss ?? ""} js={post.pageJs ?? ""} />
         ) : (
           <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
             {(post.content ?? "")
