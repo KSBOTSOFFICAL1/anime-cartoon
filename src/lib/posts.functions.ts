@@ -96,3 +96,20 @@ export const touchSliderShown = createServerFn({ method: "POST" })
     }
     return { ok: true as const };
   });
+
+/** Admin-only preview lookup: returns a page even when it is disabled. */
+export const getPagePreview = createServerFn({ method: "GET" })
+  .inputValidator((data: { slug: string }) => ({ slug: String(data.slug ?? "").slice(0, 120) }))
+  .handler(async ({ data }) => {
+    const session = await useSession<AdminSession>(sessionConfig());
+    if (!session.data.unlocked) return { post: null as Post | null, allowed: false as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows } = await supabaseAdmin
+      .from("posts")
+      .select("data")
+      .eq("slug", data.slug)
+      .eq("type", "page")
+      .limit(1);
+    if (!rows?.length) return { post: null as Post | null, allowed: true as const };
+    return { post: rows[0]!.data as unknown as Post, allowed: true as const };
+  });

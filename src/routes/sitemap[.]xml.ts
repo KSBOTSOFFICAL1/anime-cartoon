@@ -25,6 +25,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         for (const row of data ?? []) {
           const post = row.data as unknown as Post;
           if (!post?.slug) continue;
+          if (post.type === "page" && post.enabled === false) continue;
           const base = pathForPost(post);
           paths.push(base);
           for (const s of (post.seasons ?? []) as Season[]) {
