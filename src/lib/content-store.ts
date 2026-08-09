@@ -85,6 +85,10 @@ export function emptyPost(type: Post["type"]): Post {
     showViews: true,
     allowComments: true,
     content: "",
+    pageHtml: "",
+    pageCss: "",
+    pageJs: "",
+    enabled: true,
     hidden: false,
   };
 }

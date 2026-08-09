@@ -14,6 +14,7 @@ import { Route as VerifyFileDothtmlRouteImport } from './routes/$verifyFile[.]ht
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AdminPreviewSlugRouteImport } from './routes/admin-preview.$slug'
 import { Route as AnimationSlugRouteImport } from './routes/animation.$slug'
 import { Route as AnimeSlugRouteImport } from './routes/anime.$slug'
 import { Route as MoviesSlugRouteImport } from './routes/movies.$slug'
@@ -47,6 +48,11 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPreviewSlugRoute = AdminPreviewSlugRouteImport.update({
+  id: '/admin-preview/$slug',
+  path: '/admin-preview/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimationSlugRoute = AnimationSlugRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin-preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
   '/anime/$slug': typeof AnimeSlugRouteWithChildren
   '/movies/$slug': typeof MoviesSlugRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin-preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
   '/anime/$slug': typeof AnimeSlugRouteWithChildren
   '/movies/$slug': typeof MoviesSlugRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin-preview/$slug': typeof AdminPreviewSlugRoute
   '/animation/$slug': typeof AnimationSlugRouteWithChildren
   '/anime/$slug': typeof AnimeSlugRouteWithChildren
   '/movies/$slug': typeof MoviesSlugRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin-preview/$slug'
     | '/animation/$slug'
     | '/anime/$slug'
     | '/movies/$slug'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin-preview/$slug'
     | '/animation/$slug'
     | '/anime/$slug'
     | '/movies/$slug'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin-preview/$slug'
     | '/animation/$slug'
     | '/anime/$slug'
     | '/movies/$slug'
@@ -203,6 +215,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminPreviewSlugRoute: typeof AdminPreviewSlugRoute
   AnimationSlugRoute: typeof AnimationSlugRouteWithChildren
   AnimeSlugRoute: typeof AnimeSlugRouteWithChildren
   MoviesSlugRoute: typeof MoviesSlugRoute
@@ -246,6 +259,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-preview/$slug': {
+      id: '/admin-preview/$slug'
+      path: '/admin-preview/$slug'
+      fullPath: '/admin-preview/$slug'
+      preLoaderRoute: typeof AdminPreviewSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/animation/$slug': {
@@ -358,6 +378,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminPreviewSlugRoute: AdminPreviewSlugRoute,
   AnimationSlugRoute: AnimationSlugRouteWithChildren,
   AnimeSlugRoute: AnimeSlugRouteWithChildren,
   MoviesSlugRoute: MoviesSlugRoute,

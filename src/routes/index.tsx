@@ -43,7 +43,7 @@ function Home() {
   const promos = filtered.filter((p) => p.type === "promo");
   const anime = filtered.filter((p) => p.type === "anime");
   const animation = filtered.filter((p) => p.type === "animation");
-  const pages = visible.filter((p) => p.type === "page");
+  const pages = visible.filter((p) => p.type === "page" && p.enabled !== false);
 
   return (
     <div className="min-h-screen bg-background pb-16">
