@@ -88,7 +88,7 @@ function PageView() {
             {(post.content ?? "")
               .split(/\n{2,}/)
               .filter(Boolean)
-              .map((para, i) => (
+              .map((para: string, i: number) => (
                 <p key={i} className="whitespace-pre-line">
                   {para}
                 </p>

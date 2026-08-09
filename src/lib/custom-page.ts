@@ -56,7 +56,7 @@ export function scopeCss(css: string, scope: string): string {
   return out;
 }
 
-export function pageDescription(input: { description?: string; html?: string; title: string }): string {
+export function pageDescription(input: { description?: string | undefined; html?: string | undefined; title: string }): string {
   const fromField = input.description?.trim();
   if (fromField) return fromField.replace(/\s+/g, " ").slice(0, 158);
   const text = String(input.html ?? "")
