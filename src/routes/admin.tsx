@@ -10,12 +10,14 @@ import { AdminLogin } from "@/components/AdminLogin";
 import { adminChangePassword, adminLogout, getAdminStatus } from "@/lib/admin-gate.functions";
 import { embedUrl } from "@/lib/video";
 
-
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Admin Panel — Atoz Toonsverse" },
-      { name: "description", content: "Manage cartoon movie and series posts, links and episodes." },
+      {
+        name: "description",
+        content: "Manage cartoon movie and series posts, links and episodes.",
+      },
       { property: "og:title", content: "Admin Panel — Atoz Toonsverse" },
       { property: "og:description", content: "Manage cartoon posts, download links and episodes." },
       { name: "robots", content: "noindex" },
@@ -30,10 +32,12 @@ function Admin() {
   const [setupRequired, setSetupRequired] = useState(false);
 
   useEffect(() => {
-    status({}).then((r) => {
-      setUnlocked(r.unlocked);
-      setSetupRequired(r.setupRequired);
-    }).catch(() => setUnlocked(false));
+    status({})
+      .then((r) => {
+        setUnlocked(r.unlocked);
+        setSetupRequired(r.setupRequired);
+      })
+      .catch(() => setUnlocked(false));
   }, [status]);
 
   if (unlocked === null) {
@@ -43,7 +47,8 @@ function Admin() {
       </div>
     );
   }
-  if (!unlocked) return <AdminLogin setupRequired={setupRequired} onUnlocked={() => setUnlocked(true)} />;
+  if (!unlocked)
+    return <AdminLogin setupRequired={setupRequired} onUnlocked={() => setUnlocked(true)} />;
   return <AdminPanel />;
 }
 
@@ -54,7 +59,6 @@ function AdminPanel() {
   const [saved, setSaved] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const logout = useServerFn(adminLogout);
-
 
   useEffect(() => {
     setDraft(stored);
@@ -76,7 +80,6 @@ function AdminPanel() {
     setActiveId("");
     setTimeout(() => setSaved(false), 1800);
   };
-
 
   const addPost = (type: Post["type"]) => {
     const p = emptyPost(type);
@@ -116,7 +119,6 @@ function AdminPanel() {
               }}
               className="flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground"
             >
-
               <LogOut className="h-3 w-3" /> Logout
             </button>
           </div>
@@ -132,8 +134,6 @@ function AdminPanel() {
           <SeoSettings />
         </div>
       </header>
-
-
 
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-6 md:grid-cols-[240px_1fr]">
         <aside className="space-y-4">
@@ -216,7 +216,9 @@ function AdminPanel() {
               onChange={(v) =>
                 update({
                   title: v,
-                  ...(active.slug.startsWith("new-") ? { slug: uniqueSlug(v, draft, active.id) } : {}),
+                  ...(active.slug.startsWith("new-")
+                    ? { slug: uniqueSlug(v, draft, active.id) }
+                    : {}),
                 })
               }
             />
@@ -331,157 +333,170 @@ function AdminPanel() {
               </>
             ) : (
               <>
-              <Field
-                label="Banner photo link (16:9 wide)"
-                value={active.banner ?? ""}
-                onChange={(v) => update({ banner: v })}
-              />
-              <Field
-                label="Download photo link"
-                value={active.downloadImage ?? ""}
-                onChange={(v) => update({ downloadImage: v })}
-              />
-              <Field
-                label="Drive Download link (optional)"
-                value={active.driveUrl ?? ""}
-                onChange={(v) => update({ driveUrl: v })}
-              />
-              <Field
-                label="Telegram bot Download link (optional)"
-                value={active.telegramUrl ?? ""}
-                onChange={(v) => update({ telegramUrl: v })}
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Year" value={active.year} onChange={(v) => update({ year: v })} />
                 <Field
-                  label="Release date"
-                  value={active.releaseDate}
-                  onChange={(v) => update({ releaseDate: v })}
-                />
-              </div>
-              <Field
-                label="Genres (comma separated)"
-                value={active.genres.join(", ")}
-                onChange={(v) => update({ genres: v.split(",").map((g) => g.trim()).filter(Boolean) })}
-              />
-              <Field
-                label="Languages"
-                value={active.languages}
-                onChange={(v) => update({ languages: v })}
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <Field
-                  label="Duration"
-                  value={active.duration}
-                  onChange={(v) => update({ duration: v })}
+                  label="Banner photo link (16:9 wide)"
+                  value={active.banner ?? ""}
+                  onChange={(v) => update({ banner: v })}
                 />
                 <Field
-                  label="File size"
-                  value={active.fileSize}
-                  onChange={(v) => update({ fileSize: v })}
+                  label="Download photo link"
+                  value={active.downloadImage ?? ""}
+                  onChange={(v) => update({ downloadImage: v })}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
                 <Field
-                  label="Quality"
-                  value={active.quality}
-                  onChange={(v) => update({ quality: v })}
+                  label="Drive Download link (optional)"
+                  value={active.driveUrl ?? ""}
+                  onChange={(v) => update({ driveUrl: v })}
                 />
-                <Field label="OTT platform" value={active.ott} onChange={(v) => update({ ott: v })} />
-              </div>
-              <Field
-                label="Coming soon date (optional)"
-                value={active.comingSoon ?? ""}
-                onChange={(v) => update({ comingSoon: v })}
-              />
-
-              {active.type === "movie" ? (
                 <Field
-                  label="Download link"
-                  value={active.downloadUrl}
-                  onChange={(v) => update({ downloadUrl: v })}
+                  label="Telegram bot Download link (optional)"
+                  value={active.telegramUrl ?? ""}
+                  onChange={(v) => update({ telegramUrl: v })}
                 />
-              ) : (
-                <div className="space-y-3">
-                  <p className="text-xs font-medium text-muted-foreground">Episodes</p>
-                  {active.episodes.map((ep, i) => {
-                    const patch = (v: Partial<typeof ep>) =>
-                      update({
-                        episodes: active.episodes.map((x, j) => (j === i ? { ...x, ...v } : x)),
-                      });
-                    return (
-                      <div key={i} className="space-y-2 rounded-lg border border-border p-3">
-                        <div className="flex items-center gap-2">
-                          <input
-                            value={ep.label}
-                            onChange={(e) => patch({ label: e.target.value })}
-                            placeholder="Episode 01 - Title"
-                            className="h-9 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                          />
-                          <button
-                            onClick={() =>
-                              update({ episodes: active.episodes.filter((_, j) => j !== i) })
-                            }
-                            className="rounded-md border border-border px-2 py-2 text-muted-foreground"
-                            aria-label="Remove episode"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                        <input
-                          value={ep.thumbnail ?? ""}
-                          onChange={(e) => patch({ thumbnail: e.target.value })}
-                          placeholder="Episode thumbnail image link"
-                          className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <textarea
-                          value={ep.description ?? ""}
-                          onChange={(e) => patch({ description: e.target.value })}
-                          placeholder="Episode description"
-                          rows={2}
-                          className="w-full rounded-md border border-border bg-background p-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <input
-                          value={ep.telegramUrl ?? ep.url ?? ""}
-                          onChange={(e) => patch({ telegramUrl: e.target.value, url: e.target.value })}
-                          placeholder="Telegram download link"
-                          className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <input
-                          value={ep.driveUrl ?? ""}
-                          onChange={(e) => patch({ driveUrl: e.target.value })}
-                          placeholder="Google Drive download link"
-                          className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <input
-                            type="checkbox"
-                            checked={ep.isNew === true}
-                            onChange={(e) => patch({ isNew: e.target.checked })}
-                          />
-                          Mark as NEW!
-                        </label>
-                      </div>
-                    );
-                  })}
-                  <button
-                    onClick={() =>
-                      update({
-                        episodes: [
-                          ...active.episodes,
-                          {
-                            label: `Episode ${String(active.episodes.length + 1).padStart(2, "0")}`,
-                            url: "",
-                          },
-                        ],
-                      })
-                    }
-                    className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground"
-                  >
-                    + Add episode
-                  </button>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Year" value={active.year} onChange={(v) => update({ year: v })} />
+                  <Field
+                    label="Release date"
+                    value={active.releaseDate}
+                    onChange={(v) => update({ releaseDate: v })}
+                  />
                 </div>
-              )}
+                <Field
+                  label="Genres (comma separated)"
+                  value={active.genres.join(", ")}
+                  onChange={(v) =>
+                    update({
+                      genres: v
+                        .split(",")
+                        .map((g) => g.trim())
+                        .filter(Boolean),
+                    })
+                  }
+                />
+                <Field
+                  label="Languages"
+                  value={active.languages}
+                  onChange={(v) => update({ languages: v })}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <Field
+                    label="Duration"
+                    value={active.duration}
+                    onChange={(v) => update({ duration: v })}
+                  />
+                  <Field
+                    label="File size"
+                    value={active.fileSize}
+                    onChange={(v) => update({ fileSize: v })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field
+                    label="Quality"
+                    value={active.quality}
+                    onChange={(v) => update({ quality: v })}
+                  />
+                  <Field
+                    label="OTT platform"
+                    value={active.ott}
+                    onChange={(v) => update({ ott: v })}
+                  />
+                </div>
+                <Field
+                  label="Coming soon date (optional)"
+                  value={active.comingSoon ?? ""}
+                  onChange={(v) => update({ comingSoon: v })}
+                />
+
+                {active.type === "movie" ? (
+                  <Field
+                    label="Download link"
+                    value={active.downloadUrl}
+                    onChange={(v) => update({ downloadUrl: v })}
+                  />
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-xs font-medium text-muted-foreground">Episodes</p>
+                    {active.episodes.map((ep, i) => {
+                      const patch = (v: Partial<typeof ep>) =>
+                        update({
+                          episodes: active.episodes.map((x, j) => (j === i ? { ...x, ...v } : x)),
+                        });
+                      return (
+                        <div key={i} className="space-y-2 rounded-lg border border-border p-3">
+                          <div className="flex items-center gap-2">
+                            <input
+                              value={ep.label}
+                              onChange={(e) => patch({ label: e.target.value })}
+                              placeholder="Episode 01 - Title"
+                              className="h-9 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                            />
+                            <button
+                              onClick={() =>
+                                update({ episodes: active.episodes.filter((_, j) => j !== i) })
+                              }
+                              className="rounded-md border border-border px-2 py-2 text-muted-foreground"
+                              aria-label="Remove episode"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                          <input
+                            value={ep.thumbnail ?? ""}
+                            onChange={(e) => patch({ thumbnail: e.target.value })}
+                            placeholder="Episode thumbnail image link"
+                            className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <textarea
+                            value={ep.description ?? ""}
+                            onChange={(e) => patch({ description: e.target.value })}
+                            placeholder="Episode description"
+                            rows={2}
+                            className="w-full rounded-md border border-border bg-background p-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <input
+                            value={ep.telegramUrl ?? ep.url ?? ""}
+                            onChange={(e) =>
+                              patch({ telegramUrl: e.target.value, url: e.target.value })
+                            }
+                            placeholder="Telegram download link"
+                            className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <input
+                            value={ep.driveUrl ?? ""}
+                            onChange={(e) => patch({ driveUrl: e.target.value })}
+                            placeholder="Google Drive download link"
+                            className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <input
+                              type="checkbox"
+                              checked={ep.isNew === true}
+                              onChange={(e) => patch({ isNew: e.target.checked })}
+                            />
+                            Mark as NEW!
+                          </label>
+                        </div>
+                      );
+                    })}
+                    <button
+                      onClick={() =>
+                        update({
+                          episodes: [
+                            ...active.episodes,
+                            {
+                              label: `Episode ${String(active.episodes.length + 1).padStart(2, "0")}`,
+                              url: "",
+                            },
+                          ],
+                        })
+                      }
+                      className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground"
+                    >
+                      + Add episode
+                    </button>
+                  </div>
+                )}
               </>
             )}
 
@@ -526,9 +541,7 @@ function AdminPanel() {
               </>
             ) : null}
 
-            {active.type !== "page" ? (
-              <SliderControls post={active} update={update} />
-            ) : null}
+            {active.type !== "page" ? <SliderControls post={active} update={update} /> : null}
 
             {active.type !== "page" ? (
               <Toggle
@@ -559,7 +572,8 @@ function AdminPanel() {
                 }}
                 className="flex items-center gap-1 text-xs font-medium text-destructive"
               >
-                <Trash2 className="h-3 w-3" /> Delete this {active.type === "page" ? "page" : "post"}
+                <Trash2 className="h-3 w-3" /> Delete this{" "}
+                {active.type === "page" ? "page" : "post"}
               </button>
             </div>
           </section>
@@ -568,7 +582,6 @@ function AdminPanel() {
             {saved ? "Saved!" : "Select a post from the list to edit it."}
           </p>
         )}
-
       </div>
     </div>
   );
@@ -609,8 +622,6 @@ function SidebarItem({
     </button>
   );
 }
-
-
 
 function Field({
   label,
@@ -747,15 +758,7 @@ function ChangePassword() {
   );
 }
 
-
-
-function SliderControls({
-  post,
-  update,
-}: {
-  post: Post;
-  update: (patch: Partial<Post>) => void;
-}) {
+function SliderControls({ post, update }: { post: Post; update: (patch: Partial<Post>) => void }) {
   const slider = post.slider ?? {};
   const patch = (v: Partial<NonNullable<Post["slider"]>>) =>
     update({ slider: { ...slider, ...v } });
@@ -798,8 +801,9 @@ function SliderControls({
         onChange={(v) => patch({ expiresAt: v ? new Date(v).toISOString() : "" })}
       />
       <p className="text-[11px] text-muted-foreground">
-        Last shown: {slider.lastShownAt ? new Date(slider.lastShownAt).toLocaleDateString() : "never"} •
-        older items rotate back in after 12 days.
+        Last shown:{" "}
+        {slider.lastShownAt ? new Date(slider.lastShownAt).toLocaleDateString() : "never"} • older
+        items rotate back in after 12 days.
       </p>
     </div>
   );
@@ -927,9 +931,7 @@ function SeasonsEditor({
         </div>
       ))}
       <button
-        onClick={() =>
-          onChange([...seasons, { number: String(seasons.length + 1), episodes: [] }])
-        }
+        onClick={() => onChange([...seasons, { number: String(seasons.length + 1), episodes: [] }])}
         className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground"
       >
         + Add season

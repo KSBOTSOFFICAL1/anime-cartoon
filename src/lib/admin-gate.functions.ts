@@ -39,17 +39,27 @@ export const adminCreatePassword = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Passwords must match and be at least 6 characters" };
     }
     const existing = await getAdminRow();
-    if (existing?.password_hash) return { ok: false as const, error: "Admin password already exists" };
+    if (existing?.password_hash)
+      return { ok: false as const, error: "Admin password already exists" };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const passwordHash = await bcrypt.hash(data.password, 12);
-    const { error } = await supabaseAdmin.from("admin_settings").upsert(
-      { id: "admin", password_hash: passwordHash, password_salt: "bcrypt", setup_completed: true, updated_at: new Date().toISOString() },
-      { onConflict: "id", ignoreDuplicates: true },
-    );
+    const { error } = await supabaseAdmin
+      .from("admin_settings")
+      .upsert(
+        {
+          id: "admin",
+          password_hash: passwordHash,
+          password_salt: "bcrypt",
+          setup_completed: true,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id", ignoreDuplicates: true },
+      );
     if (error) return { ok: false as const, error: "Could not save admin password" };
     const saved = await getAdminRow();
-    if (!saved?.password_hash) return { ok: false as const, error: "Could not save admin password" };
+    if (!saved?.password_hash)
+      return { ok: false as const, error: "Could not save admin password" };
     const session = await useSession<AdminSession>(config());
     await session.update({ unlocked: true });
     return { ok: true as const };
@@ -77,7 +87,9 @@ export const adminChangePassword = createServerFn({ method: "POST" })
     }
 
     const row = await getAdminRow();
-    const currentOk = Boolean(row?.password_hash) && await bcrypt.compare(data.currentPassword, row.password_hash);
+    const currentOk =
+      Boolean(row?.password_hash) &&
+      (await bcrypt.compare(data.currentPassword, row.password_hash));
     if (!currentOk) return { ok: false as const, error: "Current password is incorrect" };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

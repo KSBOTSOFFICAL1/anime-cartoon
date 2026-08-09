@@ -3,7 +3,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { Lock } from "lucide-react";
 import { adminCreatePassword, adminLogin } from "@/lib/admin-gate.functions";
 
-export function AdminLogin({ onUnlocked, setupRequired = false }: { onUnlocked: () => void; setupRequired?: boolean }) {
+export function AdminLogin({
+  onUnlocked,
+  setupRequired = false,
+}: {
+  onUnlocked: () => void;
+  setupRequired?: boolean;
+}) {
   const login = useServerFn(adminLogin);
   const createPassword = useServerFn(adminCreatePassword);
   const [password, setPassword] = useState("");
@@ -36,7 +42,9 @@ export function AdminLogin({ onUnlocked, setupRequired = false }: { onUnlocked: 
       >
         <div className="flex items-center gap-2 text-foreground">
           <Lock className="h-4 w-4 text-primary" />
-          <h1 className="text-lg font-extrabold">{setupRequired ? "Create Admin Password" : "Admin Login"}</h1>
+          <h1 className="text-lg font-extrabold">
+            {setupRequired ? "Create Admin Password" : "Admin Login"}
+          </h1>
         </div>
         <input
           type="password"
@@ -56,7 +64,11 @@ export function AdminLogin({ onUnlocked, setupRequired = false }: { onUnlocked: 
             className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
           />
         ) : null}
-        {error ? <p className="text-xs font-medium text-destructive">{error === "error" ? "Incorrect password" : error}</p> : null}
+        {error ? (
+          <p className="text-xs font-medium text-destructive">
+            {error === "error" ? "Incorrect password" : error}
+          </p>
+        ) : null}
         <button
           type="submit"
           disabled={busy}
