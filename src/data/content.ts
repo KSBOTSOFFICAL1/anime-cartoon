@@ -44,7 +44,14 @@ export type Post = {
   slug: string;
   type: PostType;
   content?: string;
+  /** Custom page code (type === "page"). */
+  pageHtml?: string;
+  pageCss?: string;
+  pageJs?: string;
+  /** Custom page published status; undefined counts as enabled. */
+  enabled?: boolean;
   hidden?: boolean;
+
   title: string;
   poster: string;
   banner?: string;
