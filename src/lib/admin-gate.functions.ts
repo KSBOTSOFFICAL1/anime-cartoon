@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import bcrypt from "bcryptjs";
 
 type AdminSession = { unlocked?: boolean };
+
+type AdminRow = { password_hash: string | null };
 
 function config() {
   return {
@@ -13,40 +15,52 @@ function config() {
   };
 }
 
-function hashWith(password: string, salt: string) {
-  return createHash("sha256").update(`${salt}:${password}`, "utf8").digest("hex");
-}
-
-function safeEqual(a: string, b: string) {
-  const x = createHash("sha256").update(a, "utf8").digest();
-  const y = createHash("sha256").update(b, "utf8").digest();
-  return timingSafeEqual(x, y);
+async function getAdminRow(): Promise<AdminRow | null> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("admin_settings")
+    .select("password_hash")
+    .eq("id", "admin")
+    .maybeSingle();
+  if (error) throw new Error("Could not read admin settings");
+  return data as AdminRow | null;
 }
 
 export const getAdminStatus = createServerFn({ method: "GET" }).handler(async () => {
   const session = await useSession<AdminSession>(config());
-  return { unlocked: Boolean(session.data.unlocked) };
+  const row = await getAdminRow();
+  return { unlocked: Boolean(session.data.unlocked), setupRequired: !row?.password_hash };
 });
+
+export const adminCreatePassword = createServerFn({ method: "POST" })
+  .inputValidator((data: { password: string; confirmPassword: string }) => data)
+  .handler(async ({ data }) => {
+    if (data.password.length < 6 || data.password !== data.confirmPassword) {
+      return { ok: false as const, error: "Passwords must match and be at least 6 characters" };
+    }
+    const existing = await getAdminRow();
+    if (existing?.password_hash) return { ok: false as const, error: "Admin password already exists" };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const passwordHash = await bcrypt.hash(data.password, 12);
+    const { error } = await supabaseAdmin.from("admin_settings").upsert(
+      { id: "admin", password_hash: passwordHash, password_salt: "bcrypt", updated_at: new Date().toISOString() },
+      { onConflict: "id", ignoreDuplicates: true },
+    );
+    if (error) return { ok: false as const, error: "Could not save admin password" };
+    const saved = await getAdminRow();
+    if (!saved?.password_hash) return { ok: false as const, error: "Could not save admin password" };
+    const session = await useSession<AdminSession>(config());
+    await session.update({ unlocked: true });
+    return { ok: true as const };
+  });
 
 export const adminLogin = createServerFn({ method: "POST" })
   .inputValidator((data: { password: string }) => data)
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin
-      .from("admin_settings")
-      .select("password_hash, password_salt")
-      .eq("id", "admin")
-      .maybeSingle();
-
-    let ok = false;
-    if (row) {
-      ok = safeEqual(hashWith(data.password, row.password_salt), row.password_hash);
-    } else {
-      const expected = process.env["ADMIN_PASSWORD"];
-      if (!expected) throw new Error("ADMIN_PASSWORD is not set");
-      ok = safeEqual(data.password, expected);
-    }
-
+    const row = await getAdminRow();
+    if (!row?.password_hash) return { ok: false as const };
+    const ok = await bcrypt.compare(data.password, row.password_hash);
     if (!ok) return { ok: false as const };
     const session = await useSession<AdminSession>(config());
     await session.update({ unlocked: true });
@@ -62,26 +76,18 @@ export const adminChangePassword = createServerFn({ method: "POST" })
       return { ok: false as const, error: "New password must be at least 6 characters" };
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin
-      .from("admin_settings")
-      .select("password_hash, password_salt")
-      .eq("id", "admin")
-      .maybeSingle();
-
-    const currentOk = row
-      ? safeEqual(hashWith(data.currentPassword, row.password_salt), row.password_hash)
-      : safeEqual(data.currentPassword, process.env["ADMIN_PASSWORD"] ?? "");
+    const row = await getAdminRow();
+    const currentOk = Boolean(row?.password_hash) && await bcrypt.compare(data.currentPassword, row.password_hash);
     if (!currentOk) return { ok: false as const, error: "Current password is incorrect" };
 
-    const salt = randomBytes(16).toString("hex");
-    const { error } = await supabaseAdmin.from("admin_settings").upsert(
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("admin_settings").update(
       {
-        id: "admin",
-        password_hash: hashWith(data.newPassword, salt),
-        password_salt: salt,
+        password_hash: await bcrypt.hash(data.newPassword, 12),
+        password_salt: "bcrypt",
         updated_at: new Date().toISOString(),
       },
+    ).eq("id", "admin");
       { onConflict: "id" },
     );
     if (error) return { ok: false as const, error: "Could not save new password" };

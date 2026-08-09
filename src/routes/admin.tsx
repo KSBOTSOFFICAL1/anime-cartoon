@@ -27,9 +27,13 @@ export const Route = createFileRoute("/admin")({
 function Admin() {
   const status = useServerFn(getAdminStatus);
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
+  const [setupRequired, setSetupRequired] = useState(false);
 
   useEffect(() => {
-    status({}).then((r) => setUnlocked(r.unlocked)).catch(() => setUnlocked(false));
+    status({}).then((r) => {
+      setUnlocked(r.unlocked);
+      setSetupRequired(r.setupRequired);
+    }).catch(() => setUnlocked(false));
   }, [status]);
 
   if (unlocked === null) {
@@ -39,7 +43,7 @@ function Admin() {
       </div>
     );
   }
-  if (!unlocked) return <AdminLogin onUnlocked={() => setUnlocked(true)} />;
+  if (!unlocked) return <AdminLogin setupRequired={setupRequired} onUnlocked={() => setUnlocked(true)} />;
   return <AdminPanel />;
 }
 
